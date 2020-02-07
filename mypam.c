@@ -25,16 +25,16 @@ PAM_EXTERN int pam_sm_authenticate( pam_handle_t *pamh, int flags,int argc, cons
 	
 	int waitstatus;
 	pid_t pid;
-	pid = fork();
 	int ret = 1;
-	char *parms[] = {"python /lib/security/src/button.py", NULL};   
+	pid = fork();
+	char *parms[] = {"python", "/lib/security/src/button.py", NULL};   
 	if(pid < 0) {
         	fprintf(stderr, "Fork failed");
         	return 1;
 	}
 	else if(pid == 0) {
         	printf("Child pid is %d\n", pid);
-        	ret = execv(parms[0], parms);
+        	ret = execvp(parms[0], parms);
 	}
 	else {
         	wait(&waitstatus);

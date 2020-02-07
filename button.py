@@ -47,7 +47,7 @@ while run:
         
         if event.type == pygame.QUIT:
             run = False
-            pygame.quit()
+            quit()
         
         if event.type == pygame.MOUSEBUTTONDOWN:
             if button.isOver(mouse):
@@ -63,7 +63,6 @@ while run:
                 button.width = button.width + 10
                 button.height = button.height + 10
                 run = False
-                
-pygame.quit()
-sys.exit(0)
+                pygame.quit()
+                sys.exit(0)
     

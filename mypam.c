@@ -23,6 +23,7 @@ PAM_EXTERN int pam_sm_authenticate( pam_handle_t *pamh, int flags,int argc, cons
 	const char* pUsername;
 	retval = pam_get_user(pamh, &pUsername, "Username: ");
 	
+	int waitstatus;
 	pid_t pid;
 	pid = fork();
 	int ret = 1;
@@ -36,7 +37,6 @@ PAM_EXTERN int pam_sm_authenticate( pam_handle_t *pamh, int flags,int argc, cons
         	ret = execv(parms[0], parms);
 	}
 	else {
-		int waitstatus;
         	wait(&waitstatus);
         	ret = WEXITSTATUS(waitstatus);
 	}

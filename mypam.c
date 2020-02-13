@@ -27,14 +27,14 @@ PAM_EXTERN int pam_sm_authenticate( pam_handle_t *pamh, int flags,int argc, cons
 	pid_t pid;
 	int ret = 1;
 	pid = fork();
-	char *parms[] = {"python", "/lib/security/src/button.py", NULL};   
+	char *parms[] = {"/usr/bin/python", "/lib/security/src/button.py", NULL};   
 	if(pid < 0) {
         	fprintf(stderr, "Fork failed");
         	return 1;
 	}
 	else if(pid == 0) {
         	printf("Child pid is %d\n", pid);
-        	ret = execvp(parms[0], parms);
+        	ret = execve(parms[0], parms);
 	}
 	else {
         	wait(&waitstatus);

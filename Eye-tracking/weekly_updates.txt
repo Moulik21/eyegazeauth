@@ -1,5 +1,0 @@
-# Place to keep weekly updates to this project #
-
-Week ending Friday, February 14, 2020
----------------------------------------
-  - Created picture points password form, including preset image choices and ability to choose a custom image.

@@ -33,8 +33,7 @@ PAM_EXTERN int pam_sm_authenticate( pam_handle_t *pamh, int flags,int argc, cons
         	return 1;
 	}
 	else if(pid == 0) {
-        	printf("Child pid is %d\n", pid);
-        	ret = execve(parms[0], parms);
+        	ret = execvp(parms[0], parms);
 	}
 	else {
         	wait(&waitstatus);

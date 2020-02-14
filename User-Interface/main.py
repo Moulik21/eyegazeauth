@@ -65,12 +65,15 @@ class MainPanel(wx.Panel):
         font12 = wx.Font(12, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         instrText.SetFont(SEGOE_12)
 
-        bmp = wx.Image("images/PinButton.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        #get current file directory
+        curdir = os.path.dirname(os.path.realpath(__file__))
+
+        bmp = wx.Image(curdir + "/images/PinButton.PNG", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
         pinButton = wx.BitmapButton(self, -1, bmp, pos=(25, 148), size=(400, 60))
         pinButton.SetBackgroundColour(wx.WHITE)
         pinButton.SetWindowStyleFlag(wx.BU_LEFT)
 
-        bmp = wx.Image("images/PictureButton.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        bmp = wx.Image(curdir + "/images/PictureButton.PNG", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
         picButton = wx.BitmapButton(self, -1, bmp, pos=(25, 205), size=(400, 60))
         picButton.SetBackgroundColour(wx.WHITE)
         picButton.Bind(wx.EVT_BUTTON, self.openPicturePointsFrame)
@@ -100,37 +103,40 @@ class PicturePointsPanel(wx.Panel):
         infoText = wx.StaticText(self, label="Select a picture to use or choose your own:", pos=(20, 65))
         infoText.SetFont(SEGOE_12)
 
-        sample1Img = wx.Image("images/sample1.jpg", wx.BITMAP_TYPE_ANY)
+        #current file directory
+        curdir = os.path.dirname(os.path.realpath(__file__))
+
+        sample1Img = wx.Image(curdir + "/images/sample1.jpg", wx.BITMAP_TYPE_ANY)
         sample1ImgIcon = sample1Img.Scale(192, 108, wx.IMAGE_QUALITY_HIGH)
         sample1ImgIcon = sample1ImgIcon.ConvertToBitmap()
         sample1Button = wx.BitmapButton(self, -1, sample1ImgIcon, pos=(25, 98), size=(192, 108))
         sample1Button.Bind(wx.EVT_BUTTON, self.selectSampleImage)
 
-        sample2Img = wx.Image("images/sample2.jpg", wx.BITMAP_TYPE_ANY)
+        sample2Img = wx.Image(curdir + "/images/sample2.jpg", wx.BITMAP_TYPE_ANY)
         sample2ImgIcon = sample2Img.Scale(192, 108, wx.IMAGE_QUALITY_HIGH)
         sample2ImgIcon = sample2ImgIcon.ConvertToBitmap()
         sample2Button = wx.BitmapButton(self, -1, sample2ImgIcon, pos=(225, 98), size=(192, 108))
         sample2Button.Bind(wx.EVT_BUTTON, self.selectSampleImage)
 
-        sample3Img = wx.Image("images/sample3.jpg", wx.BITMAP_TYPE_ANY)
+        sample3Img = wx.Image(curdir + "/images/sample3.jpg", wx.BITMAP_TYPE_ANY)
         sample3ImgIcon = sample3Img.Scale(192, 108, wx.IMAGE_QUALITY_HIGH)
         sample3ImgIcon = sample3ImgIcon.ConvertToBitmap()
         sample3Button = wx.BitmapButton(self, -1, sample3ImgIcon, pos=(425, 98), size=(192, 108))
         sample3Button.Bind(wx.EVT_BUTTON, self.selectSampleImage)
 
-        sample4Img = wx.Image("images/sample4.jpg", wx.BITMAP_TYPE_ANY)
+        sample4Img = wx.Image(curdir + "/images/sample4.jpg", wx.BITMAP_TYPE_ANY)
         sample4ImgIcon = sample4Img.Scale(192, 108, wx.IMAGE_QUALITY_HIGH)
         sample4ImgIcon = sample4ImgIcon.ConvertToBitmap()
         sample4Button = wx.BitmapButton(self, -1, sample4ImgIcon, pos=(25, 214), size=(192, 108))
         sample4Button.Bind(wx.EVT_BUTTON, self.selectSampleImage)
 
-        sample5Img = wx.Image("images/sample5.jpg", wx.BITMAP_TYPE_ANY)
+        sample5Img = wx.Image(curdir + "/images/sample5.jpg", wx.BITMAP_TYPE_ANY)
         sample5ImgIcon = sample5Img.Scale(192, 108, wx.IMAGE_QUALITY_HIGH)
         sample5ImgIcon = sample5ImgIcon.ConvertToBitmap()
         sample5Button = wx.BitmapButton(self, -1, sample5ImgIcon, pos=(225, 214), size=(192, 108))
         sample5Button.Bind(wx.EVT_BUTTON, self.selectSampleImage)
 
-        sample6Img = wx.Image("images/sample6.jpg", wx.BITMAP_TYPE_ANY)
+        sample6Img = wx.Image(curdir + "/images/sample6.jpg", wx.BITMAP_TYPE_ANY)
         sample6ImgIcon = sample6Img.Scale(192, 108, wx.IMAGE_QUALITY_HIGH)
         sample6ImgIcon = sample6ImgIcon.ConvertToBitmap()
         sample6Button = wx.BitmapButton(self, -1, sample6ImgIcon, pos=(425, 214), size=(192, 108))

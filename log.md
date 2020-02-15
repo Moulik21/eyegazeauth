@@ -17,3 +17,4 @@ Week ending Friday, February 14, 2020
 ---------------------------------------
   - Created picture points password form, including preset image choices and ability to choose a custom image. - Keenan Kua
   - Fixed PAM exploit, work on implementing login authentication instead of sudo. (Encountered problems on login implementation) - Daniel Bishara, Calin Chirvase
+  - Implemented basic pupil-class where it calculates gradients of the given image - Paul Chung, Moulik Gaglani

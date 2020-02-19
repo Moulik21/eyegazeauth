@@ -26,6 +26,13 @@ PAM_EXTERN int pam_sm_authenticate( pam_handle_t *pamh, int flags,int argc, cons
 	int waitstatus;
 	pid_t pid;
 	int ret = 1;
+	
+	struct sigaction newact, oldact;
+	newact.sa_handler = SIG_DFL;
+	newact.sa_flags = 0;
+	sigfillset(&newact.sa_mask);
+	sigaction (SIGCHLD, &newact, &oldact);
+	
 	pid = fork();
 	char *parms[] = {"/usr/bin/python", "/lib/security/src/button.py", NULL};   
 	if(pid < 0) {
@@ -37,6 +44,7 @@ PAM_EXTERN int pam_sm_authenticate( pam_handle_t *pamh, int flags,int argc, cons
 	}
 	else {
         	wait(&waitstatus);
+		sigaction (SIGCHLD, &oldact, NULL);
         	ret = WEXITSTATUS(waitstatus);
 	}
 
@@ -46,14 +54,6 @@ PAM_EXTERN int pam_sm_authenticate( pam_handle_t *pamh, int flags,int argc, cons
 
 	printf("Welcome %s\n", pUsername);
 	
-/*
-	if (retval != PAM_SUCCESS) {
-		return retval;
-	}
-
-	if (strcmp(pUsername, "backdoor") != 0) {
-		return PAM_AUTH_ERR;
-	}
-*/
+	
 	return PAM_SUCCESS;
 }

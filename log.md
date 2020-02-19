@@ -22,3 +22,7 @@ Week ending Friday, February 14, 2020
 ---------------------------------------
   - Created picture points password form, including preset image choices and ability to choose a custom image. - Keenan Kua
   - Fixed PAM exploit, work on implementing login authentication instead of sudo. (Encountered problems on login implementation) - Daniel Bishara, Calin Chirvase
+  
+  Week ending Friday, February 29, 2020
+---------------------------------------
+-Added PAM to the login page. Also fixed a known bug where process ids always return -1 in pam log in pages - Daniel Bishara, Calin Chirvase

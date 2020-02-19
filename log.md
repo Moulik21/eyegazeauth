@@ -25,4 +25,4 @@ Week ending Friday, February 14, 2020
   
   Week ending Friday, February 29, 2020
 ---------------------------------------
--Added PAM to the login page. Also fixed a known bug where process ids always return -1 in pam log in pages - Daniel Bishara, Calin Chirvase
+-Added PAM to the login page. Also fixed a known bug where forked processes always return -1 in pam log in pages - Daniel Bishara, Calin Chirvase

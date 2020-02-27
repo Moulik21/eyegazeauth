@@ -53,9 +53,6 @@ class MainPanel(wx.Panel):
         font12 = wx.Font(12, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         instrText.SetFont(SEGOE_12)
 
-
-        print(curdir)
-
         bmp = wx.Image(curdir + "/images/PinButton.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
         pinButton = wx.BitmapButton(self, -1, bmp, pos=(25, 148), size=(400, 60))
         pinButton.SetBackgroundColour(wx.WHITE)
@@ -100,9 +97,6 @@ class PicturePointsPanel(wx.Panel):
 
         infoText = wx.StaticText(self, label="Select a picture to use or choose your own:", pos=(20, 65))
         infoText.SetFont(SEGOE_12)
-
-        #get current file directory
-        curdir = os.path.dirname(os.path.realpath(__file__))
 
         sample1Img = wx.Image(curdir + "/images/sample1.jpg", wx.BITMAP_TYPE_ANY)
         sample1ImgIcon = sample1Img.Scale(192, 108, wx.IMAGE_QUALITY_HIGH)

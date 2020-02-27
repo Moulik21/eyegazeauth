@@ -93,6 +93,8 @@ class PicturePointsPanel(wx.Panel):
     # wx.Panel class is usually put inside a wxFrame object. This class is also inherited from wxWindow class.
     def __init__(self, parent):
         super(PicturePointsPanel, self).__init__(parent=parent)
+        
+        self.password = ""
 
         SEGOE_12 = wx.Font(12, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         SEGOE_13 = wx.Font(13, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
@@ -168,16 +170,15 @@ class PicturePointsPanel(wx.Panel):
 
     def selectSampleImage(self, event):
         btn = event.GetEventObject().GetLabel()
-        password = ""
         print("Selected " + str(btn))
 
         if btn == "Save":
-            pswd_hash = sha512_crypt.hash(password)
+            pswd_hash = sha512_crypt.hash(self.password)
             print("Hash: " + str(pswd_hash))
-            password = ""
+            self.password = ""
 
         else:
-            password += btn
+            self.password += btn
 
     def onOpenFile(self, event):
         wildcard = "Image files (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png|" \

@@ -25,5 +25,6 @@ Week ending Friday, February 14, 2020
   
   Week ending Friday, February 29, 2020
 ---------------------------------------
-  - Added PAM to the login page. Also fixed a known bug where forked processes always return -1 in pam log in pages - Daniel Bishara, Calin Chirvase
+  - Added PAM to the login page. Also fixed a known bug where forked processes always return -1 in pam log in pages - Daniel Bishara
   - Added 4-point selection feature for the sample images. Has popup instructions, the ability to redo, popup confirmation, and graphical indication of selected points.
+  - Added password hashing and storing (text password) and a login page that checks the hash with the inputed password. Encountered issues when trying to combine features made by others into one complete program. - Calin Chirvase

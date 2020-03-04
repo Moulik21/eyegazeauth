@@ -29,3 +29,7 @@ Week ending Friday, February 14, 2020
   - Added 4-point selection feature for the sample images. Has popup instructions, the ability to redo, popup confirmation, and graphical indication of selected points. - Keenan Kua
   - Added password hashing and storing (text password) and a login page that checks the hash with the inputed password. Encountered issues when trying to combine features made by others into one complete program (whether it was different syntax, different python version, etc.). - Calin Chirvase
   - Implemented password setting user interface using the 9 grid in a picture pin interface. Also collected and organized sample pictures to use for the grid of 9. - Jiyu Liu
+
+  Week ending Friday, March 6, 2020
+---------------------------------------
+  - Added 4-point picture point selection functionality for user's custom images. - Keenan Kua

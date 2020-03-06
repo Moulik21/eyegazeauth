@@ -42,15 +42,15 @@ class MainPanel(wx.Panel):
         SEGOE_18 = wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
 
         # add a hello message to the panel
-        headerText = wx.StaticText(self, label="Set eye-gazing password", pos=(20, 20))
+        headerText = wx.StaticText(self, label="Set eye-gazing password", pos=(20, 20), size=wx.Size(50, 500))
         font18 = wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         headerText.SetFont(SEGOE_18)
 
-        infoText = wx.StaticText(self, label="Use your eyes to enter your password", pos=(20, 65))
+        infoText = wx.StaticText(self, label="Use your eyes to enter your password", pos=(20, 65), size=wx.Size(40, 500))
         font13 = wx.Font(13, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         infoText.SetFont(SEGOE_13)
 
-        instrText = wx.StaticText(self, label="Select the password format of your preference:", pos=(20, 110))
+        instrText = wx.StaticText(self, label="Select the password format of your preference:", pos=(20, 110), size=wx.Size(30, 500))
         font12 = wx.Font(12, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         instrText.SetFont(SEGOE_12)
 
@@ -64,7 +64,7 @@ class MainPanel(wx.Panel):
         picButton = wx.BitmapButton(self, -1, bmp, pos=(25, 205), size=(400, 60))
         picButton.SetBackgroundColour(wx.WHITE)
         picButton.Bind(wx.EVT_BUTTON, self.openPicturePointsFrame)
-
+        
     def openPicturePointsFrame(self, event):
         frame = PicturePointsFrame(title="")
         frame.SetSize(wx.Size(700, 600))
@@ -98,10 +98,10 @@ class PicturePointsPanel(wx.Panel):
         SEGOE_13 = wx.Font(13, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         SEGOE_18 = wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
 
-        headerText = wx.StaticText(self, label="Set eye-gazing picture points password", pos=(20, 20))
+        headerText = wx.StaticText(self, label="Set eye-gazing picture points password", pos=(20, 20), size=wx.Size(50, 500))
         headerText.SetFont(SEGOE_18)
 
-        infoText = wx.StaticText(self, label="Select a picture to use or choose your own:", pos=(20, 65))
+        infoText = wx.StaticText(self, label="Select a picture to use or choose your own:", pos=(20, 65), size=wx.Size(50, 500))
         infoText.SetFont(SEGOE_12)
 
         sample1Img = wx.Image(curdir + "/images/sample1.jpg", wx.BITMAP_TYPE_ANY)
@@ -291,8 +291,7 @@ class NineGridPanel(wx.Panel):
         # begin wxGlade: MyFrame.__do_layout
         self.grid_sizer_1 = wx.GridBagSizer(0, 0)
         self.label_1 = wx.StaticText(self, wx.ID_ANY, 'Select the first picture')
-        self.label_1.SetFont(wx.Font(25, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Arial'))
-        self.label_1.SetMinSize(wx.Size(600, 39))
+        self.label_1.SetFont(wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI'))
         self.grid_sizer_1.Add(self.label_1, (0, 0), (1, 3), wx.ALIGN_LEFT, 0)
         self.grid_sizer_1.Add(self.bitmap_button_1, (1, 0), (1, 1), 0, 0)
         self.grid_sizer_1.Add(self.bitmap_button_2, (1, 1), (1, 1), 0, 0)
@@ -316,12 +315,21 @@ class NineGridPanel(wx.Panel):
     def button_handler(self, event):
         label = event.GetEventObject().GetLabel()
         lst = ['first', 'second', 'third', 'fourth']
-        self.selected_pictures.append(label)\
+        self.selected_pictures.append(label)
 
         if len(self.selected_pictures) == 4:
-            self.label_1.SetLabel('Passwowrd set')
-            pswd_hash = sha512_crypt.hash(''.join(self.selected_pictures))
-            print("Hash: " + str(pswd_hash))
+            happySelection = wx.MessageDialog(None, "Your password is: " + ' '.join(self.selected_pictures), " ", wx.YES | wx.NO)
+            if happySelection.ShowModal() == wx.ID_NO:
+                self.selected_pictures = []
+                self.label_1.SetLabel('Select the {s} picture'.format(s=lst[len(self.selected_pictures)]))
+            else:
+                pswd_hash = sha512_crypt.hash(''.join(self.selected_pictures))
+
+                pswd_file = open("User-Interface/password.txt","w")
+                pswd_file.seek(0)
+                pswd_file.write(pswd_hash)
+                self.GetParent().Close()
+                wx.MessageBox("Password has been saved", " ", wx.OK | wx.ICON_INFORMATION)
         else:
             self.label_1.SetLabel('Select the {s} picture'.format(s=lst[len(self.selected_pictures)]))
 

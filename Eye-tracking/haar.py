@@ -13,6 +13,37 @@ class haar_cascade:
         #https://github.com/Itseez/opencv/blob/master/data/haarcascades/haarcascade_eye.xml
         self._eye_cascade = cv2.CascadeClassifier(EYE_CASCADE)
 
+    #Returns True if eye1 is the inner most box:
+    #Inner most box is defined as the smallest box around a particular eye
+    def innerBox(self, eye1, eye2):
+        #eye_format = (topleft_point, bottomright_point)
+        if(eye1[0][0] > eye2[1][0] or eye2[0][0] > eye1[1][0]):
+            return False
+        if (eye1[0][1] > eye2[1][1] or eye2[0][1] > eye1[1][1]):
+            return False
+        area1 = (eye1[1][0] - eye1[0][0]) * (eye1[1][1] - eye1[0][1])
+        area2 = (eye2[1][0] - eye2[0][0]) * (eye2[1][1] - eye2[0][1])
+        return area1 < area2
+
+    def filterEyes(self, eyes):
+        if (len(eyes) <= 2):
+            return eyes
+
+        result = []
+        for eye in eyes:
+            for eye2 in eyes:
+                if (eye != eye2):
+                    eye1_top_left = (eye[0], eye[1])
+                    eye1_bottom_right = (eye[0] + eye[2], eye[1]+eye[2])
+                    eye2_top_left = (eye2[0], eye2[1])
+                    eye2_bottom_right = (eye2[0] + eye2[2], eye2[1]+eye2[2])
+                    if(self.innerBox((eye1_top_left, eye1_bottom_right), (eye2_top_left, eye2_bottom_right))):
+                        result.append(eye)
+
+        return result
+
+
+
     def Run(self):
         """Spawns a window and records using primary webcam
         """
@@ -36,9 +67,14 @@ class haar_cascade:
                 cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
                 roi_gray = gray[y:y+h, x:x+w]
                 roi_color = frame[y:y+h, x:x+w]
-                
+
                 eyes = self._eye_cascade.detectMultiScale(roi_gray)
+                eyes_array = []
                 for (ex,ey,ew,eh) in eyes:
+                    eyes_array.append([ex,ey,ew,eh])
+                filtered_eyes = self.filterEyes(eyes_array)
+                for eye in filtered_eyes:
+                    ex, ey, ew, eh = eye[0], eye[1], eye[2], eye[3]
                     cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
                     cx, cy, cw, ch = ex, ey, ew, eh
             
@@ -104,21 +140,21 @@ class Gradient:
         
 
 if __name__ == "__main__":
-    # hc = haar_cascade()
-    # hc.Run()
+    hc = haar_cascade()
+    hc.Run()
     
-    
-    # ---------------------------------------
-    gr = Gradient()
-    # img = cv2.imread("C:\\Users\\crazy\\Documents\\490\\opencv_frame_0.png", 1)
-    # opencv_frame_0.png
-    img = cv2.imread("test_eye.png")
-    img = cv2.GaussianBlur(img,(5,5),0)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    mag, ang = gr.ComputeMagnitude(gray)
-    print(mag.shape)
-    cv2.imshow("magnitude",mag)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
-    print(mag.shape)
+    # # ---------------------------------------
+    # gr = Gradient()
+    # # img = cv2.imread("C:\\Users\\crazy\\Documents\\490\\opencv_frame_0.png", 1)
+    # # opencv_frame_0.png
+    # img = cv2.imread("test_eye.png")
+    # img = cv2.GaussianBlur(img,(5,5),0)
+    # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # mag, ang = gr.ComputeMagnitude(gray)
+    # print(mag.shape)
+    # cv2.imshow("magnitude",mag)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    #
+    # print(mag.shape)

@@ -42,7 +42,33 @@ class haar_cascade:
 
         return result
 
+    def cut_eyebrows(self, eye):
+        height, width = eye.shape[:2]
 
+        '''
+            From OpenCV : eyebrows always take ~25% of the eye 'frame' starting from the top        
+        '''
+        eyebrow_h = int(height / 4)
+        eye = eye[eyebrow_h:height, 0:width]
+
+        return eye
+
+    def pupil_detection(self, eye, detector, threshold):
+        '''
+            did a series of erosions and dilations to reduce the “noise” we had.
+            That trick is commonly used in different CV scenarios, but it works well
+            in our situation. After that, we blurred the image so it’s smoother.
+        '''
+        gray_frame = cv2.cvtColor(eye, cv2.COLOR_BGR2GRAY)
+        _, eye = cv2.threshold(gray_frame, threshold, 255, cv2.THRESH_BINARY)
+        eye = cv2.erode(eye, None, iterations=2)  # 1
+        eye = cv2.dilate(eye, None, iterations=4)  # 2
+        eye = cv2.medianBlur(eye, 5)  # 3
+        keypoints = detector.detect(eye)
+        return keypoints
+
+    def nothing(x):
+        pass
 
     def Run(self):
         """Spawns a window and records using primary webcam
@@ -50,9 +76,15 @@ class haar_cascade:
         #https://stackoverflow.com/questions/34588464/python-how-to-capture-image-from-webcam-on-click-using-opencv
         cam = cv2.VideoCapture(0)
 
-        cv2.namedWindow("test")
+        cv2.namedWindow("img")
+        cv2.createTrackbar('threshold', 'img', 0, 255, self.nothing)
 
         img_counter = 0
+
+        detector_params = cv2.SimpleBlobDetector_Params()
+        detector_params.filterByArea = True
+        detector_params.maxArea = 1500
+        detector = cv2.SimpleBlobDetector_create(detector_params)
 
         while True:
             ret, frame = cam.read()
@@ -77,6 +109,15 @@ class haar_cascade:
                     ex, ey, ew, eh = eye[0], eye[1], eye[2], eye[3]
                     cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
                     cx, cy, cw, ch = ex, ey, ew, eh
+                    threshold = cv2.getTrackbarPos('threshold', 'img') #dynamically get threshold value
+                    eye_frame = roi_color[ey : ey+eh, ex : ex+ew]
+                    eye_frame = self.cut_eyebrows(eye_frame)
+                    keypoints = self.pupil_detection(eye_frame, detector, threshold)
+
+                    #draw pupil keypoints
+                    cv2.drawKeypoints(eye_frame, keypoints, eye_frame, (0, 0, 255),
+                                            cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
             
             cv2.imshow('img',frame)
 

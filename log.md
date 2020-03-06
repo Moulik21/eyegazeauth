@@ -36,3 +36,6 @@ Week ending Friday, February 14, 2020
   - Adressed common false-positives associated with face and eye detection. -Daniel Bishara
   - Implemented pupil detection and tracking using blob detection algorithm. Has a threshold tuning slider to set blob threshold on the fly. Need to fine tune threhold tetsing to get more consistent results under various lighting conditions. - Moulik Gaglani
   - Integrated 4-point picture point selection and 9-grid set password into one program. Created authentication side for 9-grid set password. - Jiyu Liu
+  - Continued to work on translating research paper's method on tracking pupil. Overall progression was slow, but found potential alternative methods (Blob detection).
+  Will continue to translate the research paper to compare for acurracy.
+  Assisted Moulik with implementing blob detection - Paul

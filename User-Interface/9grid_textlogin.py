@@ -125,12 +125,12 @@ class MainPanel(wx.Panel):
         #get current file directory
         curdir = os.path.dirname(os.path.realpath(__file__))
 
-        bmp = wx.Image(curdir + "/images/PinButton.PNG", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        bmp = wx.Image(curdir + "/images/PinButton.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
         pinButton = wx.BitmapButton(self, -1, bmp, pos=(25, 148), size=(400, 60))
         pinButton.SetBackgroundColour(wx.WHITE)
         pinButton.SetWindowStyleFlag(wx.BU_LEFT)
 
-        bmp = wx.Image(curdir + "/images/PictureButton.PNG", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        bmp = wx.Image(curdir + "/images/PictureButton.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
         picButton = wx.BitmapButton(self, -1, bmp, pos=(25, 205), size=(400, 60))
         picButton.SetBackgroundColour(wx.WHITE)
         picButton.Bind(wx.EVT_BUTTON, self.openPicturePointsFrame)

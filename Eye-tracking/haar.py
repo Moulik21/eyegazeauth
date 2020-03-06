@@ -15,34 +15,33 @@ class haar_cascade:
 
     #Returns True if eye1 is the inner most box:
     #Inner most box is defined as the smallest box around a particular eye
-    def innerBox(self, eye1, eye2):
+    def innerBox(self, box1, box2):
         #eye_format = (topleft_point, bottomright_point)
-        if(eye1[0][0] > eye2[1][0] or eye2[0][0] > eye1[1][0]):
+        if(box1[0][0] > box2[1][0] or box2[0][0] > box1[1][0]):
             return False
-        if (eye1[0][1] > eye2[1][1] or eye2[0][1] > eye1[1][1]):
+        if (box1[0][1] > box2[1][1] or box2[0][1] > box1[1][1]):
             return False
-        area1 = (eye1[1][0] - eye1[0][0]) * (eye1[1][1] - eye1[0][1])
-        area2 = (eye2[1][0] - eye2[0][0]) * (eye2[1][1] - eye2[0][1])
+        area1 = (box1[1][0] - box1[0][0]) * (box1[1][1] - box1[0][1])
+        area2 = (box2[1][0] - box2[0][0]) * (box2[1][1] - box2[0][1])
         return area1 < area2
 
-    def filterEyes(self, eyes):
-        if (len(eyes) <= 2):
-            return eyes
-
+    #Filters boxes (surrounding face, eyes, pupils etc) based on heuristics:
+    #If we have more than expected boxes, filters less-specific overlapping boxes
+    def filterBox(self, boxes, expected_num):
+        if (len(boxes) <= expected_num):
+            return boxes
         result = []
-        for eye in eyes:
-            for eye2 in eyes:
-                if (eye != eye2):
-                    eye1_top_left = (eye[0], eye[1])
-                    eye1_bottom_right = (eye[0] + eye[2], eye[1]+eye[2])
-                    eye2_top_left = (eye2[0], eye2[1])
-                    eye2_bottom_right = (eye2[0] + eye2[2], eye2[1]+eye2[2])
-                    if(self.innerBox((eye1_top_left, eye1_bottom_right), (eye2_top_left, eye2_bottom_right))):
-                        result.append(eye)
 
+        for box1 in boxes:
+            for box2 in boxes:
+                if (box1 != box2):
+                    box1_top_left = (box1[0], box1[1])
+                    box1_bottom_right = (box1[0] + box1[2], box1[1]+box1[2])
+                    box2_top_left = (box2[0], box2[1])
+                    box2_bottom_right = (box2[0] + box2[2], box2[1]+box2[2])
+                    if(self.innerBox((box1_top_left, box1_bottom_right), (box2_top_left, box2_bottom_right))):
+                        result.append(box1)
         return result
-
-
 
     def Run(self):
         """Spawns a window and records using primary webcam
@@ -59,11 +58,17 @@ class haar_cascade:
 
             gray = cv2.cvtColor(cv2.GaussianBlur(frame,(5,5),0), 0)
             faces = self._face_cascade.detectMultiScale(gray, 1.3, 5)
+            face_array = []
+            for (x, y, w, h) in faces:
+                face_array.append([x,y,w,h])
+            filtered_faces = self.filterBox(face_array, 1)
+
             cx, cy, cw, ch = 0, 0, 0, 0
 
-            # Draw rectange around eyes and face
+            # Draw rectangle around eyes and face
             roi_gray = np.array([])
-            for (x,y,w,h) in faces:
+            for face in filtered_faces:#(x,y,w,h) in faces:
+                x,y,w,h = face[0], face[1], face[2], face[3]
                 cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
                 roi_gray = gray[y:y+h, x:x+w]
                 roi_color = frame[y:y+h, x:x+w]
@@ -71,8 +76,9 @@ class haar_cascade:
                 eyes = self._eye_cascade.detectMultiScale(roi_gray)
                 eyes_array = []
                 for (ex,ey,ew,eh) in eyes:
-                    eyes_array.append([ex,ey,ew,eh])
-                filtered_eyes = self.filterEyes(eyes_array)
+                    if(ey < y + h/2):
+                        eyes_array.append([ex,ey,ew,eh])
+                filtered_eyes = self.filterBox(eyes_array, 2)
                 for eye in filtered_eyes:
                     ex, ey, ew, eh = eye[0], eye[1], eye[2], eye[3]
                     cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)

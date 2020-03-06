@@ -153,13 +153,12 @@ class PicturePointsPanel(wx.Panel):
             defaultDir=os.getcwd(),
             defaultFile="",
             wildcard=wildcard,
-            style=wx.FD_OPEN | wx.FD_MULTIPLE | wx.FD_CHANGE_DIR
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_CHANGE_DIR
             )
         if dlg.ShowModal() == wx.ID_OK:
-            paths = dlg.GetPaths()
-            print("You chose the following file(s):")
-            for path in paths:
-                print(path)
+            path = dlg.GetPath()
+            chosenImg = wx.Image(path, wx.BITMAP_TYPE_ANY)
+            self.openPicturePointsSelectFrame(event, chosenImg)
         dlg.Destroy()
 
 

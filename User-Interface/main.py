@@ -2,6 +2,7 @@ import os
 import wx
 import webbrowser
 import wx.lib.buttons as buts
+import sys
 from passlib.hash import sha512_crypt
 
 # get current file directory
@@ -284,7 +285,7 @@ class NineGridPanel(wx.Panel):
 
         self.bitmap_button_9.SetSize(self.bitmap_button_9.GetBestSize())
         self.bitmap_button_9.Bind(wx.EVT_BUTTON, self.button_handler)
-        self.bitmap_button_1.SetLabel('tree')
+        self.bitmap_button_9.SetLabel('tree')
         # end wxGlade
 
     def __do_layout(self):

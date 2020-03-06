@@ -2,6 +2,7 @@ import os
 import wx
 import webbrowser
 import wx.lib.buttons as buts
+import sys
 from passlib.hash import sha512_crypt
 
 # get current file directory
@@ -42,10 +43,11 @@ class MainPanel(wx.Panel):
         SEGOE_18 = wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
 
         # add a hello message to the panel
-        headerText = wx.StaticText(self, label="Set eye-gazing password", pos=(20, 20), size=wx.Size(50, 500))
+        headerText = wx.StaticText(self, label="Login using the method of your choice", pos=(20, 20), size=wx.Size(50, 500))
         font18 = wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         headerText.SetFont(SEGOE_18)
 
+        '''
         infoText = wx.StaticText(self, label="Use your eyes to enter your password", pos=(20, 65), size=wx.Size(40, 500))
         font13 = wx.Font(13, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         infoText.SetFont(SEGOE_13)
@@ -53,15 +55,16 @@ class MainPanel(wx.Panel):
         instrText = wx.StaticText(self, label="Select the password format of your preference:", pos=(20, 110), size=wx.Size(30, 500))
         font12 = wx.Font(12, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         instrText.SetFont(SEGOE_12)
+        '''
 
         bmp = wx.Image(curdir + "/images/PinButton.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
-        pinButton = wx.BitmapButton(self, -1, bmp, pos=(25, 148), size=(400, 60))
+        pinButton = wx.BitmapButton(self, -1, bmp, pos=(25, 70), size=(400, 60))
         pinButton.SetBackgroundColour(wx.WHITE)
         pinButton.SetWindowStyleFlag(wx.BU_LEFT)
         pinButton.Bind(wx.EVT_BUTTON, self.openNineGridFrame)
 
         bmp = wx.Image(curdir + "/images/PictureButton.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
-        picButton = wx.BitmapButton(self, -1, bmp, pos=(25, 205), size=(400, 60))
+        picButton = wx.BitmapButton(self, -1, bmp, pos=(25, 140), size=(400, 60))
         picButton.SetBackgroundColour(wx.WHITE)
         picButton.Bind(wx.EVT_BUTTON, self.openPicturePointsFrame)
         
@@ -98,10 +101,10 @@ class PicturePointsPanel(wx.Panel):
         SEGOE_13 = wx.Font(13, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         SEGOE_18 = wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
 
-        headerText = wx.StaticText(self, label="Set eye-gazing picture points password", pos=(20, 20), size=wx.Size(50, 500))
+        headerText = wx.StaticText(self, label="Authenticate using the picture PIN layout", pos=(20, 20), size=wx.Size(50, 500))
         headerText.SetFont(SEGOE_18)
 
-        infoText = wx.StaticText(self, label="Select a picture to use or choose your own:", pos=(20, 65), size=wx.Size(50, 500))
+        infoText = wx.StaticText(self, label="Authenticate using a pattern of points on a picture", pos=(20, 65), size=wx.Size(50, 500))
         infoText.SetFont(SEGOE_12)
 
         sample1Img = wx.Image(curdir + "/images/sample1.jpg", wx.BITMAP_TYPE_ANY)
@@ -284,7 +287,7 @@ class NineGridPanel(wx.Panel):
 
         self.bitmap_button_9.SetSize(self.bitmap_button_9.GetBestSize())
         self.bitmap_button_9.Bind(wx.EVT_BUTTON, self.button_handler)
-        self.bitmap_button_1.SetLabel('tree')
+        self.bitmap_button_9.SetLabel('tree')
         # end wxGlade
 
     def __do_layout(self):
@@ -315,12 +318,21 @@ class NineGridPanel(wx.Panel):
     def button_handler(self, event):
         label = event.GetEventObject().GetLabel()
         lst = ['first', 'second', 'third', 'fourth']
-        self.selected_pictures.append(label)\
+        self.selected_pictures.append(label)
 
         if len(self.selected_pictures) == 4:
-            self.label_1.SetLabel('Passwowrd set')
-            pswd_hash = sha512_crypt.hash(''.join(self.selected_pictures))
-            with open(curdir + 'password.txt', 'w+')
+            pswd_file = open("User-Interface/password.txt","r+")
+            file_pswd = pswd_file.read()
+
+            print(self.selected_pictures)
+
+            if (sha512_crypt.verify(''.join(self.selected_pictures), file_pswd)):
+                print('Authentication successful')
+                sys.exit(0)
+            else:
+                self.selected_pictures = []
+                self.label_1.SetLabel('Select the {s} picture'.format(s=lst[len(self.selected_pictures)]))
+                wx.MessageBox("Authentication failed", " ", wx.OK | wx.ICON_INFORMATION)
         else:
             self.label_1.SetLabel('Select the {s} picture'.format(s=lst[len(self.selected_pictures)]))
 

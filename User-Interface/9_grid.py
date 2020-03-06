@@ -14,19 +14,19 @@ from passlib.hash import sha512_crypt
 # begin wxGlade: extracode
 # end wxGlade
 
-class MyFrame(wx.Frame):
+class NineGridFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
 
         box_sizer = wx.BoxSizer(wx.VERTICAL)
-        panel = MyPanel(self)
+        panel = NineGridPanel(self)
         box_sizer.Add(panel, 1, wx.EXPAND)
 
         self.SetSizer(box_sizer)
         box_sizer.Fit(self)
 
-class MyPanel(wx.Panel):
+class NineGridPanel(wx.Panel):
     def __init__(self, *args, **kwds):
         wx.Panel.__init__(self, *args, **kwds)
 
@@ -128,7 +128,7 @@ class MyPanel(wx.Panel):
 
 class MyApp(wx.App):
     def OnInit(self):
-        self.frame = MyFrame(None, wx.ID_ANY, "")
+        self.frame = NineGridFrame(None, wx.ID_ANY, "")
         self.SetTopWindow(self.frame)
         self.frame.Show()
         return True

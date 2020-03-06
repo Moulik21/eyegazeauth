@@ -33,3 +33,4 @@ Week ending Friday, February 14, 2020
   Week ending Friday, March 6, 2020
 ---------------------------------------
   - Added 4-point picture point selection functionality for user's custom images. - Keenan Kua
+  - Adressed common false-positives associated with face and eye detection. -Daniel Bishara

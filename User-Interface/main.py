@@ -27,45 +27,72 @@ class MainFrame(wx.Frame):
     def __init__(self, parent, title, pos):
         super().__init__(parent=parent, title=title, pos=pos)
         self.OnInit()
+        panel = MainPanel(parent=self)
 
     def OnInit(self):
-        panel = MainPanel(parent=self)
         self.SetBackgroundColour('white')
+        # Blank icon workaround
+        bmp = wx.Bitmap(1, 1)
+        bmp.SetMaskColour(wx.BLACK)
+        icon = wx.Icon(bmp)
+        self.SetIcon(icon)
 
 class MainPanel(wx.Panel):
     # A panel is a window on which controls are placed. (e.g. buttons and text boxes)
     # wx.Panel class is usually put inside a wxFrame object. This class is also inherited from wxWindow class.
     def __init__(self, parent):
         super().__init__(parent=parent)
+        self.__do_layout()
 
+    def __do_layout(self):
         SEGOE_12 = wx.Font(12, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         SEGOE_13 = wx.Font(13, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         SEGOE_18 = wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
 
+        boxSizer = wx.BoxSizer(wx.VERTICAL)
+
+        boxSizer.Add((-1, 20))
+
         # add a hello message to the panel
-        headerText = wx.StaticText(self, label="Set eye-gazing password", pos=(20, 20), size=wx.Size(50, 500))
+        headerText = wx.StaticText(self, label="Set eye-gazing password")
         font18 = wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         headerText.SetFont(SEGOE_18)
+        boxSizer.Add(headerText, 0, wx.LEFT, 30)
 
-        infoText = wx.StaticText(self, label="Use your eyes to enter your password", pos=(20, 65), size=wx.Size(40, 500))
+        boxSizer.Add((-1, 10))
+
+        infoText = wx.StaticText(self, label="Use your eyes to enter your password")
         font13 = wx.Font(13, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         infoText.SetFont(SEGOE_13)
+        boxSizer.Add(infoText, 0, wx.LEFT, 30)
 
-        instrText = wx.StaticText(self, label="Select the password format of your preference:", pos=(20, 110), size=wx.Size(30, 500))
+        boxSizer.Add((-1, 15))
+
+        instrText = wx.StaticText(self, label="Select the password format of your preference:")
         font12 = wx.Font(12, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         instrText.SetFont(SEGOE_12)
+        boxSizer.Add(instrText, 0, wx.LEFT, 30)
+
+        boxSizer.Add((-1, 10))
 
         bmp = wx.Image(curdir + "/images/PinButton.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
-        pinButton = wx.BitmapButton(self, -1, bmp, pos=(25, 148), size=(400, 60))
+        pinButton = wx.BitmapButton(self, wx.ID_ANY, bmp, style=wx.BORDER_NONE)
         pinButton.SetBackgroundColour(wx.WHITE)
         pinButton.SetWindowStyleFlag(wx.BU_LEFT)
         pinButton.Bind(wx.EVT_BUTTON, self.openNineGridFrame)
+        boxSizer.Add(pinButton, 0, wx.LEFT, 30)
+
+        boxSizer.Add((-1, 15))
 
         bmp = wx.Image(curdir + "/images/PictureButton.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
-        picButton = wx.BitmapButton(self, -1, bmp, pos=(25, 205), size=(400, 60))
+        picButton = wx.BitmapButton(self, -1, bmp, style=wx.BORDER_NONE)
         picButton.SetBackgroundColour(wx.WHITE)
         picButton.Bind(wx.EVT_BUTTON, self.openPicturePointsFrame)
-        
+        boxSizer.Add(picButton, 0, wx.LEFT, 30)
+
+        self.SetSizer(boxSizer)
+        boxSizer.Layout()
+
     def openPicturePointsFrame(self, event):
         frame = PicturePointsFrame(title="")
         frame.SetSize(wx.Size(700, 600))
@@ -88,63 +115,94 @@ class PicturePointsFrame(wx.Frame):
     def OnInit(self):
         panel = PicturePointsPanel(parent=self)
         self.SetBackgroundColour('white')
+        # Blank icon workaround
+        bmp = wx.Bitmap(1, 1)
+        bmp.SetMaskColour(wx.BLACK)
+        icon = wx.Icon(bmp)
+        self.SetIcon(icon)
 
 class PicturePointsPanel(wx.Panel):
     # A panel is a window on which controls are placed. (e.g. buttons and text boxes)
     # wx.Panel class is usually put inside a wxFrame object. This class is also inherited from wxWindow class.
     def __init__(self, parent):
         super().__init__(parent=parent)
+        self.__do_layout()
 
+    def __do_layout(self):
         SEGOE_12 = wx.Font(12, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         SEGOE_13 = wx.Font(13, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
         SEGOE_18 = wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI')
 
-        headerText = wx.StaticText(self, label="Set eye-gazing picture points password", pos=(20, 20), size=wx.Size(50, 500))
-        headerText.SetFont(SEGOE_18)
+        boxSizer = wx.BoxSizer(wx.VERTICAL)
 
-        infoText = wx.StaticText(self, label="Select a picture to use or choose your own:", pos=(20, 65), size=wx.Size(50, 500))
+        boxSizer.Add((-1, 20))
+
+        headerText = wx.StaticText(self, label="Set eye-gazing picture points password")
+        headerText.SetFont(SEGOE_18)
+        boxSizer.Add(headerText, 0, wx.LEFT, 30)
+
+        boxSizer.Add((-1, 10))
+
+        infoText = wx.StaticText(self, label="Select a picture to use or choose your own:")
         infoText.SetFont(SEGOE_12)
+        boxSizer.Add(infoText, 0, wx.LEFT, 30)
+
+        boxSizer.Add((-1, 5))
+        gridSizer = wx.GridSizer(rows=2, cols=3, hgap=5, vgap=5)
 
         sample1Img = wx.Image(curdir + "/images/sample1.jpg", wx.BITMAP_TYPE_ANY)
         sample1ImgIcon = sample1Img.Scale(192, 108, wx.IMAGE_QUALITY_HIGH)
         sample1ImgIcon = sample1ImgIcon.ConvertToBitmap()
-        sample1Button = wx.BitmapButton(self, -1, sample1ImgIcon, pos=(25, 98), size=(192, 108))
+        sample1Button = wx.BitmapButton(self, -1, sample1ImgIcon, style=wx.BORDER_NONE)
         sample1Button.Bind(wx.EVT_BUTTON, lambda event: self.openPicturePointsSelectFrame(event, sample1Img))
+        gridSizer.Add(sample1Button, 0)
 
         sample2Img = wx.Image(curdir + "/images/sample2.jpg", wx.BITMAP_TYPE_ANY)
         sample2ImgIcon = sample2Img.Scale(192, 108, wx.IMAGE_QUALITY_HIGH)
         sample2ImgIcon = sample2ImgIcon.ConvertToBitmap()
-        sample2Button = wx.BitmapButton(self, -1, sample2ImgIcon, pos=(225, 98), size=(192, 108))
+        sample2Button = wx.BitmapButton(self, -1, sample2ImgIcon, style=wx.BORDER_NONE)
         sample2Button.Bind(wx.EVT_BUTTON, lambda event: self.openPicturePointsSelectFrame(event, sample2Img))
+        gridSizer.Add(sample2Button, 0)
 
         sample3Img = wx.Image(curdir + "/images/sample3.jpg", wx.BITMAP_TYPE_ANY)
         sample3ImgIcon = sample3Img.Scale(192, 108, wx.IMAGE_QUALITY_HIGH)
         sample3ImgIcon = sample3ImgIcon.ConvertToBitmap()
-        sample3Button = wx.BitmapButton(self, -1, sample3ImgIcon, pos=(425, 98), size=(192, 108))
+        sample3Button = wx.BitmapButton(self, -1, sample3ImgIcon, style=wx.BORDER_NONE)
         sample3Button.Bind(wx.EVT_BUTTON, lambda event: self.openPicturePointsSelectFrame(event, sample3Img))
+        gridSizer.Add(sample3Button, 0)
 
         sample4Img = wx.Image(curdir + "/images/sample4.jpg", wx.BITMAP_TYPE_ANY)
         sample4ImgIcon = sample4Img.Scale(192, 108, wx.IMAGE_QUALITY_HIGH)
         sample4ImgIcon = sample4ImgIcon.ConvertToBitmap()
-        sample4Button = wx.BitmapButton(self, -1, sample4ImgIcon, pos=(25, 214), size=(192, 108))
+        sample4Button = wx.BitmapButton(self, -1, sample4ImgIcon, style=wx.BORDER_NONE)
         sample4Button.Bind(wx.EVT_BUTTON, lambda event: self.openPicturePointsSelectFrame(event, sample4Img))
+        gridSizer.Add(sample4Button, 0)
 
         sample5Img = wx.Image(curdir + "/images/sample5.jpg", wx.BITMAP_TYPE_ANY)
         sample5ImgIcon = sample5Img.Scale(192, 108, wx.IMAGE_QUALITY_HIGH)
         sample5ImgIcon = sample5ImgIcon.ConvertToBitmap()
-        sample5Button = wx.BitmapButton(self, -1, sample5ImgIcon, pos=(225, 214), size=(192, 108))
+        sample5Button = wx.BitmapButton(self, -1, sample5ImgIcon, style=wx.BORDER_NONE)
         sample5Button.Bind(wx.EVT_BUTTON, lambda event: self.openPicturePointsSelectFrame(event, sample5Img))
+        gridSizer.Add(sample5Button, 0)
 
         sample6Img = wx.Image(curdir + "/images/sample6.jpg", wx.BITMAP_TYPE_ANY)
         sample6ImgIcon = sample6Img.Scale(192, 108, wx.IMAGE_QUALITY_HIGH)
         sample6ImgIcon = sample6ImgIcon.ConvertToBitmap()
-        sample6Button = wx.BitmapButton(self, -1, sample6ImgIcon, pos=(425, 214), size=(192, 108))
+        sample6Button = wx.BitmapButton(self, -1, sample6ImgIcon, style=wx.BORDER_NONE)
         sample6Button.Bind(wx.EVT_BUTTON, lambda event: self.openPicturePointsSelectFrame(event, sample6Img))
+        gridSizer.Add(sample6Button, 0)
 
-        chooseImgButton = wx.Button(self, label="Choose your own", pos=(25, 345), size=(145, 35))
-        chooseImgButton.SetBackgroundColour(wx.WHITE)
+        boxSizer.Add(gridSizer, 0, wx.LEFT, 30)
+        boxSizer.Add((-1, 30))
+
+        chooseImgButton = wx.Button(self, label="Choose your own", style=wx.BORDER_NONE)
+        chooseImgButton.SetBackgroundColour(wx.Colour(200, 200, 200))
         chooseImgButton.SetFont(SEGOE_12)
         chooseImgButton.Bind(wx.EVT_BUTTON, self.onOpenFile)
+        boxSizer.Add(chooseImgButton, 0, wx.LEFT, 30)
+
+        self.SetSizer(boxSizer)
+        boxSizer.Layout()
 
     def openPicturePointsSelectFrame(self, event, img):
         frame = PicturePointsSelectFrame(img=img, title="")
@@ -181,6 +239,11 @@ class PicturePointsSelectFrame(wx.Frame):
     def OnInit(self, img):
         panel = PicturePointsSelectPanel(parent=self, img=img)
         self.SetBackgroundColour('white')
+        # Blank icon workaround
+        bmp = wx.Bitmap(1, 1)
+        bmp.SetMaskColour(wx.BLACK)
+        icon = wx.Icon(bmp)
+        self.SetIcon(icon)
 
 class PicturePointsSelectPanel(wx.Panel):
     selection = []

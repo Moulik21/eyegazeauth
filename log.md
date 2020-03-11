@@ -40,3 +40,7 @@ Week ending Friday, February 14, 2020
   - Continued to work on translating research paper's method on tracking pupil. Overall progression was slow, but found potential alternative methods (Blob detection).
   Will continue to translate the research paper to compare for acurracy.
   Assisted Moulik with implementing blob detection - Paul
+
+  Week ending Friday, March 13, 2020
+---------------------------------------
+  - Added sizers to password setup UI for compatability between Linux and Windows. - Keenan Kua

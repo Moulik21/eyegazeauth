@@ -44,3 +44,5 @@ Week ending Friday, February 14, 2020
   Week ending Friday, March 13, 2020
 ---------------------------------------
   - Added sizers to password setup UI for compatability between Linux and Windows. - Keenan Kua
+  - Implemented PAM support for wx python program; child process will now forefit its root privledges. - Daniel Bishara
+  - Created setup.sh, ideally this will eventually be a one-off script that will perform all necessary setup for environment such as moving files into the correct locations, downloading necessary packages, ensuring correct file permissions etc. I plan to make this more sophisticated next week - Daniel Bishara

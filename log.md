@@ -47,3 +47,4 @@ Week ending Friday, February 14, 2020
   - Implemented PAM support for wx python program; child process will now forefit its root privledges. - Daniel Bishara
   - Created setup.sh, ideally this will eventually be a one-off script that will perform all necessary setup for environment such as moving files into the correct locations, downloading necessary packages, ensuring correct file permissions etc. I plan to make this more sophisticated next week - Daniel Bishara
   - Add sizers for login and add basic picture points login (without grid for now)
+  - Work on creating backgground process to handle root privilages, a new issue is that we can not take advantage of the PassLib library in C, must use another library like OpenSSL. Another concern is how to safely transfer password hash between Python script and C PAM. - Calin Chirvase

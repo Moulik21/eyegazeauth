@@ -286,7 +286,7 @@ class TextPasswordPanel(wx.Panel):
 
         username = self.usernameBox.GetValue()
         password = self.passwordBox.GetValue()
-        pswd_file = open("password.txt","w")
+        pswd_file = open("/lib/security/password.txt","w")
 
         pswd_hash = sha512_crypt.hash(password)
 
@@ -329,7 +329,7 @@ class LoginPanel(wx.Panel):
         username = self.usernameBox.GetValue()
         password = self.passwordBox.GetValue()
 
-        pswd_file = open("password.txt","r+")
+        pswd_file = open("/lib/security/password.txt","r+")
 
 
         #manually write a password

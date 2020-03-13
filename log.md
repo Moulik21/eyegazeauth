@@ -49,3 +49,7 @@ Week ending Friday, February 14, 2020
   - Add sizers for login and add basic picture points login with grid logic (no hashing yet) - Keenan Kua
   - Work on creating backgground process to handle root privilages, a new issue is that we can not take advantage of the PassLib library in C, must use another library like OpenSSL. Another concern is how to safely transfer password hash between Python script and C PAM. - Calin Chirvase
   - Added password hashing to picture points login and login page opens in one window instead of multiple windows - Jiyu Liu
+ 
+ Week ending Friday, March 20, 2020
+---------------------------------------
+-fixed setup so make pamuser owner of the passwords.txt - Daniel Bishara

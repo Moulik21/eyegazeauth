@@ -224,7 +224,7 @@ class PicturePointsPanel(wx.Panel):
     def openPicturePointsSelectFrame(self, event, img, imgName):
         frame = PicturePointsSelectFrame(img=img, imgName=imgName, title="")
         frame.SetSize(wx.Size(img.Width, img.Height))
-        wx.MessageBox("To set your password, click a series of 4 points on the image", " ", wx.OK | wx.ICON_INFORMATION)
+        #wx.MessageBox("To set your password, click a series of 4 points on the image", " ", wx.OK | wx.ICON_INFORMATION)
 
     def onOpenFile(self, event):
         wildcard = "Image files (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png|" \
@@ -261,6 +261,7 @@ class PicturePointsSelectFrame(wx.Frame):
         bmp.SetMaskColour(wx.BLACK)
         icon = wx.Icon(bmp)
         self.SetIcon(icon)
+        wx.MessageBox("To set your password, click a series of 4 points on the image", " ", wx.OK | wx.ICON_INFORMATION)
 
 
 class PicturePointsSelectPanel(wx.Panel):
@@ -304,17 +305,21 @@ class PicturePointsSelectPanel(wx.Panel):
                 wx.MessageBox("Password has been saved", " ", wx.OK | wx.ICON_INFORMATION)
 
     def calcAndSaveGridOffset(self, selections):
-        pswdFile = open(curdir + "/picturepointspassword.txt", "w+")
+        pswdFile = open(curdir + "/picturepointspassword.txt", "w")
         pswdFile.seek(0)
-        offsetFile = open(curdir + "/picturepointsoffset.txt", "w+")
+        offsetFile = open(curdir + "/picturepointsoffset.txt", "w")
         offsetFile.seek(0)
+
+        self.selected_grids = []
+        
         for selection in selections:
-            print("SAVD", selection.x, selection.y)
+            
+            print("SAVED", selection.x, selection.y)
             gridBoxX = math.ceil(selection.x / GRID_SIZE)
             gridBoxY = math.ceil(selection.y / GRID_SIZE)
-            print("SAVD", gridBoxX, gridBoxY)
-            pswdFile.write(str(gridBoxX) + " " + str(gridBoxY) + '\n')
-
+            print("SAVED", gridBoxX, gridBoxY)
+            self.selected_grids.append(str(gridBoxX) + " " + str(gridBoxY))
+            
             # x and y value of the center of the grid box containing this selected point
             gridBoxCenterX = gridBoxX * GRID_SIZE - (math.floor(GRID_SIZE/2))
             gridBoxCenterY = gridBoxY * GRID_SIZE - (math.floor(GRID_SIZE/2))
@@ -322,6 +327,10 @@ class PicturePointsSelectPanel(wx.Panel):
             offsetY = gridBoxCenterY - selection.y
 
             offsetFile.write(str(offsetX) + " " + str(offsetY) + '\n')
+        
+        pswd_hash = sha512_crypt.hash(''.join(self.selected_grids))
+        pswdFile.write(pswd_hash)
+        sys.exit(0)
 
 class NineGridFrame(wx.Frame):
     def __init__(self, *args, **kwds):
@@ -406,10 +415,10 @@ class NineGridPanel(wx.Panel):
 
     def __do_layout(self):
         # begin wxGlade: MyFrame.__do_layout
-        self.grid_sizer_1 = wx.GridBagSizer(0, 0)
+        self.grid_sizer_1 = wx.GridBagSizer(5, 5)
         self.label_1 = wx.StaticText(self, wx.ID_ANY, 'Select the first picture')
         self.label_1.SetFont(wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI'))
-        self.grid_sizer_1.Add(self.label_1, (0, 0), (1, 3), wx.ALIGN_LEFT, 0)
+        self.grid_sizer_1.Add(self.label_1, (0, 0), (1, 3), 0, 0)
         self.grid_sizer_1.Add(self.bitmap_button_1, (1, 0), (1, 1), 0, 0)
         self.grid_sizer_1.Add(self.bitmap_button_2, (1, 1), (1, 1), 0, 0)
         self.grid_sizer_1.Add(self.bitmap_button_3, (1, 2), (1, 1), 0, 0)
@@ -448,6 +457,7 @@ class NineGridPanel(wx.Panel):
                 pswd_file.write(pswd_hash)
                 self.GetParent().Close()
                 wx.MessageBox("Password has been saved", " ", wx.OK | wx.ICON_INFORMATION)
+                sys.exit(0)
         else:
             self.label_1.SetLabel('Select the {s} picture'.format(s=lst[len(self.selected_pictures)]))
 

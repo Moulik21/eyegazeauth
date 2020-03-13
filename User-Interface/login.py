@@ -130,16 +130,18 @@ class PicturePointsSelectPanel(wx.Panel):
         self.sbmpImg.Bind(wx.EVT_LEFT_DOWN, self.onClick)
         self.selection = []
         self.Show(True)
-        self.expected = []
+        #self.expected = []
         self.offsets = []
-        self.getExpectedPassword()
+        #self.getExpectedPassword()
         self.getOffsets()
 
+    '''
     def getExpectedPassword(self):
         picturePointsPasswordFile = open(curdir + "/picturepointspassword.txt", "r")
         for i in range(4):
             point = picturePointsPasswordFile.readline()
             self.expected.append(point.strip())
+    '''
 
     def getOffsets(self):
         offsetsFile = open(curdir + "/picturepointsoffset.txt", "r")
@@ -156,6 +158,11 @@ class PicturePointsSelectPanel(wx.Panel):
         dc.SelectObject(wx.NullBitmap)
         self.sbmpImg.SetBitmap(self.bmpImg)
         if (len(self.selection) == 4):
+
+            self.selected_grids = []
+            pswd_file = open(curdir + "/picturepointspassword.txt", "r")
+            file_pswd = pswd_file.read()
+            
             for i in range(4):
                 offsetXY = self.offsets[i].split()
                 # Move the user's selection closer to the center of the expected grid box
@@ -163,23 +170,23 @@ class PicturePointsSelectPanel(wx.Panel):
                 transformedSelectionY = self.selection[i].y + int(offsetXY[1])
                 gridBoxX = math.ceil(transformedSelectionX / GRID_SIZE)
                 gridBoxY = math.ceil(transformedSelectionY / GRID_SIZE)
-                expectedGridXY = self.expected[i].split()
-                if (gridBoxX != int(expectedGridXY[0]) or gridBoxY != int(expectedGridXY[1])):
-                    incorrectSelection = wx.MessageDialog(None,
-                                                          "The password entered does not match the one stored. Retry?",
-                                                          " ", wx.OK | wx.CANCEL | wx.ICON_EXCLAMATION)
-                    # They want to retry
-                    if (incorrectSelection.ShowModal() == wx.ID_OK):
-                        self.selection = []
-                        self.bmpImg = self.img.ConvertToBitmap()
-                        self.sbmpImg.SetBitmap(self.bmpImg)
-                    else:
-                        self.GetParent().Close()
+                self.selected_grids.append(str(gridBoxX) + " " + str(gridBoxY))
 
-                    # No point completing the loop
-                    return
-            self.GetParent().Close()
-            print("MATCH")
+
+            if (sha512_crypt.verify(''.join(self.selected_grids), file_pswd)):
+                print('Authentication successful')
+                sys.exit(0)
+            else:
+                incorrectSelection = wx.MessageDialog(None,
+                        "The password entered does not match the one stored. Retry?",
+                        " ", wx.OK | wx.CANCEL | wx.ICON_EXCLAMATION)
+                # They want to retry
+                if (incorrectSelection.ShowModal() == wx.ID_OK):
+                    self.selection = []
+                    self.bmpImg = self.img.ConvertToBitmap()
+                    self.sbmpImg.SetBitmap(self.bmpImg)
+                else:
+                    self.GetParent().Close()
 
 class NineGridFrame(wx.Frame):
     def __init__(self, *args, **kwds):

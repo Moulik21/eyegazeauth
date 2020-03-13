@@ -415,10 +415,13 @@ class NineGridPanel(wx.Panel):
 
     def __do_layout(self):
         # begin wxGlade: MyFrame.__do_layout
+        self.box_sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(self.box_sizer_1)
+
         self.grid_sizer_1 = wx.GridBagSizer(5, 5)
         self.label_1 = wx.StaticText(self, wx.ID_ANY, 'Select the first picture')
         self.label_1.SetFont(wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI'))
-        self.grid_sizer_1.Add(self.label_1, (0, 0), (1, 3), 0, 0)
+        self.grid_sizer_1.Add(self.label_1, (0, 0), (1, 3))
         self.grid_sizer_1.Add(self.bitmap_button_1, (1, 0), (1, 1), 0, 0)
         self.grid_sizer_1.Add(self.bitmap_button_2, (1, 1), (1, 1), 0, 0)
         self.grid_sizer_1.Add(self.bitmap_button_3, (1, 2), (1, 1), 0, 0)
@@ -428,13 +431,14 @@ class NineGridPanel(wx.Panel):
         self.grid_sizer_1.Add(self.bitmap_button_7, (3, 0), (1, 1), 0, 0)
         self.grid_sizer_1.Add(self.bitmap_button_8, (3, 1), (1, 1), 0, 0)
         self.grid_sizer_1.Add(self.bitmap_button_9, (3, 2), (1, 1), 0, 0)
-        self.SetSizerAndFit(self.grid_sizer_1)
         self.grid_sizer_1.AddGrowableRow(1)
         self.grid_sizer_1.AddGrowableRow(2)
         self.grid_sizer_1.AddGrowableRow(3)
         self.grid_sizer_1.AddGrowableCol(0)
         self.grid_sizer_1.AddGrowableCol(1)
         self.grid_sizer_1.AddGrowableCol(2)
+        self.box_sizer_1.Add(self.grid_sizer_1, 0, wx.ALL|wx.EXPAND, 30, 0)
+
         self.Layout()
         # end wxGlade
 

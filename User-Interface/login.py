@@ -33,8 +33,27 @@ class MainFrame(wx.Frame):
         self.OnInit()
 
     def OnInit(self):
-        panel = MainPanel(parent=self)
+        self.boxSizer = wx.BoxSizer(wx.VERTICAL)
         self.SetBackgroundColour('white')
+
+        self.panel = MainPanel(parent=self)
+        self.boxSizer.Add(self.panel, 1, wx.EXPAND)
+        self.panel.Show()
+
+        picturePathFile = open(curdir + "/picturepointsname.txt", "r")
+        picturePath = picturePathFile.readline()
+        self.image = wx.Image(picturePath, wx.BITMAP_TYPE_ANY)
+        self.picturePointsPanel = PicturePointsSelectPanel(parent=self, img=self.image)
+        self.boxSizer.Add(self.picturePointsPanel, 1, wx.EXPAND)
+        self.picturePointsPanel.Hide()
+
+        self.nineGridPanel = NineGridPanel(self)
+        self.boxSizer.Add(self.nineGridPanel, 1, wx.EXPAND)
+        self.nineGridPanel.Hide()
+
+        self.SetSizer(self.boxSizer)
+
+
         # Blank icon workaround
         bmp = wx.Bitmap(1, 1)
         bmp.SetMaskColour(wx.BLACK)
@@ -74,30 +93,29 @@ class MainPanel(wx.Panel):
 
         boxSizer.Add((-1, 15))
 
-        picturePathFile = open(curdir + "/picturepointsname.txt", "r")
-        picturePath = picturePathFile.readline()
-
-        image = wx.Image(picturePath, wx.BITMAP_TYPE_ANY)
-
         bmp = wx.Image(curdir + "/images/PictureButton.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
         picButton = wx.BitmapButton(self, -1, bmp, style=wx.BORDER_NONE)
         picButton.SetBackgroundColour(wx.WHITE)
-        picButton.Bind(wx.EVT_BUTTON, lambda event: self.openPicturePointsSelectFrame(event, image))
+        picButton.Bind(wx.EVT_BUTTON, lambda event: self.openPicturePointsSelectFrame(event))
         boxSizer.Add(picButton, 0, wx.LEFT, 30)
 
         self.SetSizer(boxSizer)
         boxSizer.Layout()
 
     def openNineGridFrame(self, event):
-        frame = NineGridFrame(None, wx.ID_ANY, "")
-        frame.Show()
+        parent = self.GetParent()
+        parent.panel.Hide()
+        parent.nineGridPanel.Show()
+        parent.Fit()
+        parent.nineGridPanel.Layout()
 
-    def openPicturePointsSelectFrame(self, event, img):
-        frame = PicturePointsSelectFrame(img=img, title="")
-        frame.SetSize(wx.Size(img.Width, img.Height))
-        # wx.MessageBox("To enter your password, click a series of 4 points on the image", " ", wx.OK | wx.ICON_INFORMATION)
+    def openPicturePointsSelectFrame(self, event):
+        parent = self.GetParent()
+        parent.SetSize(wx.Size(parent.image.Width, parent.image.Height))
+        parent.picturePointsPanel.Show()
+        parent.panel.Hide()
 
-
+'''
 class PicturePointsSelectFrame(wx.Frame):
     # subclass of wx.Window; Frame is a top level window
     # A frame is a window whose size and position can (usually) be changed by the user.
@@ -115,7 +133,7 @@ class PicturePointsSelectFrame(wx.Frame):
         bmp.SetMaskColour(wx.BLACK)
         icon = wx.Icon(bmp)
         self.SetIcon(icon)
-
+'''
 
 class PicturePointsSelectPanel(wx.Panel):
     selection = []
@@ -129,7 +147,7 @@ class PicturePointsSelectPanel(wx.Panel):
         self.sbmpImg = wx.StaticBitmap(self, -1, self.bmpImg, (1, 1), (self.img.GetWidth(), self.img.GetHeight()))
         self.sbmpImg.Bind(wx.EVT_LEFT_DOWN, self.onClick)
         self.selection = []
-        self.Show(True)
+        self.Show()
         #self.expected = []
         self.offsets = []
         #self.getExpectedPassword()
@@ -188,6 +206,7 @@ class PicturePointsSelectPanel(wx.Panel):
                 else:
                     self.GetParent().Close()
 
+'''
 class NineGridFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
@@ -205,7 +224,7 @@ class NineGridFrame(wx.Frame):
         bmp.SetMaskColour(wx.BLACK)
         icon = wx.Icon(bmp)
         self.SetIcon(icon)
-
+'''
 
 class NineGridPanel(wx.Panel):
     def __init__(self, *args, **kwds):
@@ -277,10 +296,13 @@ class NineGridPanel(wx.Panel):
 
     def __do_layout(self):
         # begin wxGlade: MyFrame.__do_layout
+        self.box_sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(self.box_sizer_1)
+
         self.grid_sizer_1 = wx.GridBagSizer(0, 0)
-        self.label_1 = wx.StaticText(self, wx.ID_ANY, 'Select the first picture')
+        self.label_1 = wx.StaticText(self, wx.ID_ANY, 'Select the first picture', size=wx.Size(500, 50))
         self.label_1.SetFont(wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI'))
-        self.grid_sizer_1.Add(self.label_1, (0, 0), (1, 3), wx.ALIGN_LEFT, 0)
+        self.grid_sizer_1.Add(self.label_1, (0, 0), (1, 3))
         self.grid_sizer_1.Add(self.bitmap_button_1, (1, 0), (1, 1), 0, 0)
         self.grid_sizer_1.Add(self.bitmap_button_2, (1, 1), (1, 1), 0, 0)
         self.grid_sizer_1.Add(self.bitmap_button_3, (1, 2), (1, 1), 0, 0)
@@ -290,13 +312,13 @@ class NineGridPanel(wx.Panel):
         self.grid_sizer_1.Add(self.bitmap_button_7, (3, 0), (1, 1), 0, 0)
         self.grid_sizer_1.Add(self.bitmap_button_8, (3, 1), (1, 1), 0, 0)
         self.grid_sizer_1.Add(self.bitmap_button_9, (3, 2), (1, 1), 0, 0)
-        self.SetSizerAndFit(self.grid_sizer_1)
         self.grid_sizer_1.AddGrowableRow(1)
         self.grid_sizer_1.AddGrowableRow(2)
         self.grid_sizer_1.AddGrowableRow(3)
         self.grid_sizer_1.AddGrowableCol(0)
         self.grid_sizer_1.AddGrowableCol(1)
         self.grid_sizer_1.AddGrowableCol(2)
+        self.box_sizer_1.Add(self.grid_sizer_1, 0, wx.ALL|wx.EXPAND, 25, 0)
         self.Layout()
         # end wxGlade
 

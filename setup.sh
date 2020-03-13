@@ -31,7 +31,7 @@ echo "$user_id" >> "$USER_ID_FILE"
 #setup the password file where we store the eye-tracking passwords
 touch "$PASSWORD_FILE"
 chown "$user_id" "$PASSWORD_FILE"
-chmod 704 "$PASSWORD_FILE"
+chmod 404 "$PASSWORD_FILE"
 
 #setup to allow the wx python to be run by non-privledged users
 xhost + local:

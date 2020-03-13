@@ -74,15 +74,10 @@ class MainPanel(wx.Panel):
 
         boxSizer.Add((-1, 15))
 
-        picturePathFile = open(curdir + "/picturepointsname.txt", "r")
-        picturePath = picturePathFile.readline()
-
-        image = wx.Image(picturePath, wx.BITMAP_TYPE_ANY)
-
         bmp = wx.Image(curdir + "/images/PictureButton.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
         picButton = wx.BitmapButton(self, -1, bmp, style=wx.BORDER_NONE)
         picButton.SetBackgroundColour(wx.WHITE)
-        picButton.Bind(wx.EVT_BUTTON, lambda event: self.openPicturePointsSelectFrame(event, image))
+        picButton.Bind(wx.EVT_BUTTON, lambda event: self.openPicturePointsSelectFrame(event))
         boxSizer.Add(picButton, 0, wx.LEFT, 30)
 
         self.SetSizer(boxSizer)
@@ -92,11 +87,13 @@ class MainPanel(wx.Panel):
         frame = NineGridFrame(None, wx.ID_ANY, "")
         frame.Show()
 
-    def openPicturePointsSelectFrame(self, event, img):
-        frame = PicturePointsSelectFrame(img=img, title="")
-        frame.SetSize(wx.Size(img.Width, img.Height))
+    def openPicturePointsSelectFrame(self, event):
+        picturePathFile = open(curdir + "/picturepointsname.txt", "r")
+        picturePath = picturePathFile.readline()
+        image = wx.Image(picturePath, wx.BITMAP_TYPE_ANY)
+        frame = PicturePointsSelectFrame(img=image, title="")
+        frame.SetSize(wx.Size(image.Width, image.Height))
         # wx.MessageBox("To enter your password, click a series of 4 points on the image", " ", wx.OK | wx.ICON_INFORMATION)
-
 
 class PicturePointsSelectFrame(wx.Frame):
     # subclass of wx.Window; Frame is a top level window

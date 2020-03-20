@@ -116,19 +116,6 @@ def main():
                             print("bottom right")
                         elif angle >=335:
                             print("right")
-
-
-                        a = ""
-                        b=""
-                        if (xDiff > 10):
-                            a = "left"
-                        elif (xDiff < -10):
-                            a = "right"
-                        if (yDiff > 10):
-                            b = "up"
-                        elif (yDiff < -10):
-                            b = "down"
-                        print("" + a + "   " + b + "")
         cv2.imshow('image', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break

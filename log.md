@@ -52,4 +52,5 @@ Week ending Friday, February 14, 2020
  
  Week ending Friday, March 20, 2020
 ---------------------------------------
--fixed setup so make pamuser owner of the passwords.txt - Daniel Bishara
+- Fixed setup so make pamuser owner of the passwords.txt - Daniel Bishara
+- Add progress dots feedback to picture points select login screen via custom title bar - Keenan Kua

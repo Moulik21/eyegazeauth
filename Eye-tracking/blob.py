@@ -53,15 +53,33 @@ def detect_faces(img, classifier):
 
     return frame
 
-def blob_process(img, threshold, detector):
+def blob_process(img, threshold, detector, old_area = None):
     gray_frame = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     _, img = cv2.threshold(gray_frame, threshold, 255, cv2.THRESH_BINARY)
     img = cv2.erode(img, None, iterations=2)
     img = cv2.dilate(img, None, iterations=4)
     img = cv2.medianBlur(img, 5)
     keypoints = detector.detect(img)
+    if keypoints and old_area and len(keypoints) > 1:
+        tmp = 1000
+        for keypoint in keypoints:
+            if abs(keypoint.size - old_area) < tmp:
+                ans = keypoint
+                tmp = abs(keypoint.size - old_area)
+        keypoints = np.array(ans)
 
     return keypoints
+
+def get_keypoints(eye, threshold, detector, old_keypoints, old_area):
+    keypoints = blob_process(eye, threshold, detector, old_area)
+
+    if keypoints:
+        old_keypoints = keypoints
+        old_area = keypoints[0].size
+    else:
+        keypoints = old_keypoints
+
+    return keypoints, old_keypoints, old_area
 
 def cut_eyebrows(img):
     height, width = img.shape[:2]
@@ -76,6 +94,8 @@ def main():
     cap = cv2.VideoCapture(0)
     cv2.namedWindow('image')
     cv2.createTrackbar('threshold', 'image', 0, 255, nothing)
+    old_area = None
+    old_keypoints = None
     while True:
         _, frame = cap.read()
         face_frame = detect_faces(frame, face_cascade)
@@ -85,10 +105,10 @@ def main():
                 if eye is not None:
                     threshold = cv2.getTrackbarPos('threshold', 'image')
                     eye = cut_eyebrows(eye)
-                    keypoints = blob_process(eye, threshold, detector)
+                    keypoints, old_keypoints, old_area = get_keypoints(eye, threshold, detector, old_keypoints, old_area)
                     thresh = 0
                     while(not keypoints and thresh < 100):
-                        keypoints = blob_process(eye, thresh, detector)
+                        keypoints, old_keypoints, old_area = get_keypoints(eye, threshold, detector, old_keypoints, old_area)
                         thresh += 5
                     eye = cv2.drawKeypoints(eye, keypoints, eye, (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
                     if(keypoints and len(keypoints)>0):

@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+from math import atan2, degrees
 
 FACE_PATH = "haarcascade_frontalface_default.xml"
 EYE_PATH = "haarcascade_eye.xml"
@@ -89,8 +90,45 @@ def main():
                     while(not keypoints and thresh < 100):
                         keypoints = blob_process(eye, thresh, detector)
                         thresh += 5
-                        print("wat")
                     eye = cv2.drawKeypoints(eye, keypoints, eye, (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+                    if(keypoints and len(keypoints)>0):
+                        height, width = eye.shape[:2]
+                        eye_box_center = [width/2, height/2]
+                        pupil_point = keypoints[0].pt
+                        xDiff = pupil_point[0] - eye_box_center[0]
+                        yDiff = eye_box_center[1] - pupil_point[1]
+                        angle = degrees(atan2(yDiff, xDiff))
+                        if angle > 0 and angle < 25:
+                            print("right")
+                        elif angle >= 25 and angle <65:
+                            print("top right")
+                        elif angle >= 65 and angle <110:
+                            print("up")
+                        elif angle >= 110 and angle <120:
+                            print("top left")
+                        elif angle >= 120 and angle <200:
+                            print("left")
+                        elif angle >= 200 and angle <245:
+                            print("bottom left")
+                        elif angle >= 245 and angle <290:
+                            print("down")
+                        elif angle >= 290 and angle <335:
+                            print("bottom right")
+                        elif angle >=335:
+                            print("right")
+
+
+                        a = ""
+                        b=""
+                        if (xDiff > 10):
+                            a = "left"
+                        elif (xDiff < -10):
+                            a = "right"
+                        if (yDiff > 10):
+                            b = "up"
+                        elif (yDiff < -10):
+                            b = "down"
+                        print("" + a + "   " + b + "")
         cv2.imshow('image', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -98,6 +136,7 @@ def main():
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
+
     face_cascade, eye_cascade, detector = InitHaarCascade()
     main()
 

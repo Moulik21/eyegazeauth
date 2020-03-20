@@ -28,7 +28,7 @@ class haar_cascade:
     #Filters boxes (surrounding face, eyes, pupils etc) based on heuristics:
     #If we have more than expected boxes, filters less-specific overlapping boxes
     def filterBox(self, boxes, expected_num):
-        if (len(boxes) <= expected_num):
+        if (len(boxes) <= 1):
             return boxes
         result = []
 
@@ -110,7 +110,7 @@ class haar_cascade:
                 eyes = self._eye_cascade.detectMultiScale(roi_gray)
                 eyes_array = []
                 for (ex,ey,ew,eh) in eyes:
-                    if(ey < y + h/2):
+                    if(ey < y + h/2  and not (ex < x and ex + ew > x)):
                         eyes_array.append([ex,ey,ew,eh])
                 filtered_eyes = self.filterBox(eyes_array, 2)
                 for eye in filtered_eyes:

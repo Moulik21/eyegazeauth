@@ -40,19 +40,22 @@ class MainFrame(wx.Frame):
         self.boxSizer.Add(self.panel, 1, wx.EXPAND)
         self.panel.Show()
 
+        self.customTitleBar = CustomTitleBar(self)
+        self.boxSizer.Add(self.customTitleBar, 1, wx.EXPAND)
+        self.customTitleBar.Hide()
+
         picturePathFile = open(curdir + "/picturepointsname.txt", "r")
         picturePath = picturePathFile.readline()
         self.image = wx.Image(picturePath, wx.BITMAP_TYPE_ANY)
-        self.picturePointsPanel = PicturePointsSelectPanel(parent=self, img=self.image)
-        self.boxSizer.Add(self.picturePointsPanel, 1, wx.EXPAND)
-        self.picturePointsPanel.Hide()
+        self.picturePointsSelectPanel = PicturePointsSelectPanel(parent=self, img=self.image)
+        self.boxSizer.Add(self.picturePointsSelectPanel, 1, wx.EXPAND)
+        self.picturePointsSelectPanel.Hide()
 
         self.nineGridPanel = NineGridPanel(self)
         self.boxSizer.Add(self.nineGridPanel, 1, wx.EXPAND)
         self.nineGridPanel.Hide()
 
         self.SetSizer(self.boxSizer)
-
 
         # Blank icon workaround
         bmp = wx.Bitmap(1, 1)
@@ -111,9 +114,17 @@ class MainPanel(wx.Panel):
 
     def openPicturePointsSelectFrame(self, event):
         parent = self.GetParent()
-        parent.SetSize(wx.Size(parent.image.Width, parent.image.Height))
-        parent.picturePointsPanel.Show()
         parent.panel.Hide()
+        parent.SetSize(wx.Size(parent.image.Width, parent.image.Height))
+        parent.SetTitle('⚪ ⚪ ⚪ ⚪')
+        parent.SetWindowStyleFlag(wx.BORDER_NONE)
+        parent.customTitleBar.Show()
+        parent.customTitleBar.Layout()
+        parent.picturePointsSelectPanel.Show()
+        parent.Fit()
+        parent.picturePointsSelectPanel.Layout()
+        parent.Maximize(True)
+
 
 '''
 class PicturePointsSelectFrame(wx.Frame):
@@ -135,6 +146,7 @@ class PicturePointsSelectFrame(wx.Frame):
         self.SetIcon(icon)
 '''
 
+
 class PicturePointsSelectPanel(wx.Panel):
     selection = []
 
@@ -147,10 +159,9 @@ class PicturePointsSelectPanel(wx.Panel):
         self.sbmpImg = wx.StaticBitmap(self, -1, self.bmpImg, (1, 1), (self.img.GetWidth(), self.img.GetHeight()))
         self.sbmpImg.Bind(wx.EVT_LEFT_DOWN, self.onClick)
         self.selection = []
-        self.Show()
-        #self.expected = []
+        # self.expected = []
         self.offsets = []
-        #self.getExpectedPassword()
+        # self.getExpectedPassword()
         self.getOffsets()
 
     '''
@@ -170,17 +181,21 @@ class PicturePointsSelectPanel(wx.Panel):
     def onClick(self, event):
         pos = event.GetPosition()
         self.selection.append(pos)
-        dc = wx.MemoryDC(self.bmpImg)
-        dc.SetBrush(wx.Brush(wx.GREEN))
-        dc.DrawCircle(pos.x, pos.y, 7)
-        dc.SelectObject(wx.NullBitmap)
-        self.sbmpImg.SetBitmap(self.bmpImg)
+        parentCustomTitleBar = self.GetParent().customTitleBar
+        children = parentCustomTitleBar.sizerTitleBar.GetChildren()
+        dotsWidget = children[1].GetWindow()
+        if (len(self.selection) == 1):
+            dotsWidget.SetLabel("⚫ ⚪ ⚪ ⚪")
+        if (len(self.selection) == 2):
+            dotsWidget.SetLabel("⚫ ⚫ ⚪ ⚪")
+        if (len(self.selection) == 3):
+            dotsWidget.SetLabel("⚫ ⚫ ⚫ ⚪")
         if (len(self.selection) == 4):
-
+            dotsWidget.SetLabel("⚫ ⚫ ⚫ ⚫")
             self.selected_grids = []
             pswd_file = open(curdir + "/picturepointspassword.txt", "r")
             file_pswd = pswd_file.read()
-            
+
             for i in range(4):
                 offsetXY = self.offsets[i].split()
                 # Move the user's selection closer to the center of the expected grid box
@@ -190,21 +205,22 @@ class PicturePointsSelectPanel(wx.Panel):
                 gridBoxY = math.ceil(transformedSelectionY / GRID_SIZE)
                 self.selected_grids.append(str(gridBoxX) + " " + str(gridBoxY))
 
-
             if (sha512_crypt.verify(''.join(self.selected_grids), file_pswd)):
                 print('Authentication successful')
                 sys.exit(0)
             else:
                 incorrectSelection = wx.MessageDialog(None,
-                        "The password entered does not match the one stored. Retry?",
-                        " ", wx.OK | wx.CANCEL | wx.ICON_EXCLAMATION)
+                                                      "The password entered does not match the one stored. Retry?",
+                                                      " ", wx.OK | wx.CANCEL | wx.ICON_EXCLAMATION)
                 # They want to retry
                 if (incorrectSelection.ShowModal() == wx.ID_OK):
                     self.selection = []
                     self.bmpImg = self.img.ConvertToBitmap()
                     self.sbmpImg.SetBitmap(self.bmpImg)
+                    dotsWidget.SetLabel("⚪ ⚪ ⚪ ⚪")
                 else:
                     self.GetParent().Close()
+
 
 '''
 class NineGridFrame(wx.Frame):
@@ -225,6 +241,7 @@ class NineGridFrame(wx.Frame):
         icon = wx.Icon(bmp)
         self.SetIcon(icon)
 '''
+
 
 class NineGridPanel(wx.Panel):
     def __init__(self, *args, **kwds):
@@ -318,7 +335,7 @@ class NineGridPanel(wx.Panel):
         self.grid_sizer_1.AddGrowableCol(0)
         self.grid_sizer_1.AddGrowableCol(1)
         self.grid_sizer_1.AddGrowableCol(2)
-        self.box_sizer_1.Add(self.grid_sizer_1, 0, wx.ALL|wx.EXPAND, 25, 0)
+        self.box_sizer_1.Add(self.grid_sizer_1, 0, wx.ALL | wx.EXPAND, 25, 0)
         self.Layout()
         # end wxGlade
 
@@ -343,6 +360,50 @@ class NineGridPanel(wx.Panel):
         else:
             self.label_1.SetLabel('Select the {s} picture'.format(s=lst[len(self.selected_pictures)]))
 
+
+class CustomTitleBar(wx.Panel):
+    def __init__(self, *args, **kwds):
+        wx.Panel.__init__(self, *args, **kwds)
+
+        # Creating the custom title bar
+        self.btnExit = wx.Button(self, wx.ID_ANY, "", style=wx.BORDER_NONE | wx.BU_NOTEXT)
+        self.panelBody = wx.Panel(self, wx.ID_ANY)
+        self.Bind(wx.EVT_BUTTON, self.OnBtnExitClick, self.btnExit)
+        self.__set_properties()
+        self.__do_layout()
+
+    def __set_properties(self):
+        closeImg = wx.Image(curdir + "/images/CloseIcon.png", wx.BITMAP_TYPE_ANY)
+        closeImgIcon = closeImg.Scale(13, 13, wx.IMAGE_QUALITY_HIGH)
+        closeImgIcon = closeImgIcon.ConvertToBitmap()
+        self.btnExit.SetBitmap(closeImgIcon)
+        self.btnExit.SetBackgroundColour(wx.WHITE)
+        self.SetBackgroundColour(wx.Colour(255, 255, 255))
+
+    def __do_layout(self):
+        # Sizers:
+        self.sizerTitleBar = wx.FlexGridSizer(1, 3, 0, 0)
+
+        # Titlebar:
+        self.progressDots = wx.StaticText(self, wx.ID_ANY, "⚪ ⚪ ⚪ ⚪")
+        self.progressDots.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, 0, ""))
+        self.sizerTitleBar.Add((50, -1))
+        self.sizerTitleBar.Add(self.progressDots, 0, wx.ALIGN_CENTER, 0)
+        self.sizerTitleBar.Add(self.btnExit, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, -20)
+        self.sizerTitleBar.AddGrowableRow(0)
+        self.sizerTitleBar.AddGrowableCol(1)
+
+        self.SetSizer(self.sizerTitleBar)
+        self.Layout()
+
+    def OnBtnExitClick(self, event):
+        self.GetParent().Close()
+
+    def OnBtnMinimizeClick(self, event):
+        self.GetParent().Iconize(True)
+
+    def OnBtnMaximizeClick(self, event):
+        self.GetParent().Maximize(not self.IsMaximized())
 
 if __name__ == "__main__":
     app = MyApp()

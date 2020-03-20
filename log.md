@@ -52,5 +52,6 @@ Week ending Friday, February 14, 2020
  
  Week ending Friday, March 20, 2020
 ---------------------------------------
-- Fixed setup so make pamuser owner of the passwords.txt - Daniel Bishara
+- Small Update to setup to make pamuser owner of the passwords.txt - Daniel Bishara
+- Worked on improving accuracy of eye tracking, and also worked on gaze direction - Daniel and Paul
 - Add progress dots feedback to picture points select login screen via custom title bar - Keenan Kua

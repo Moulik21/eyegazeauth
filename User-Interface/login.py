@@ -36,13 +36,13 @@ class MainFrame(wx.Frame):
         self.boxSizer = wx.BoxSizer(wx.VERTICAL)
         self.SetBackgroundColour('white')
 
+        self.customTitleBar = CustomTitleBar(self)
+        self.boxSizer.Add(self.customTitleBar, 0, wx.EXPAND)
+        self.customTitleBar.Hide()
+
         self.panel = MainPanel(parent=self)
         self.boxSizer.Add(self.panel, 1, wx.EXPAND)
         self.panel.Show()
-
-        self.customTitleBar = CustomTitleBar(self)
-        self.boxSizer.Add(self.customTitleBar, 1, wx.EXPAND)
-        self.customTitleBar.Hide()
 
         picturePathFile = open(curdir + "/picturepointsname.txt", "r")
         picturePath = picturePathFile.readline()
@@ -108,6 +108,9 @@ class MainPanel(wx.Panel):
     def openNineGridFrame(self, event):
         parent = self.GetParent()
         parent.panel.Hide()
+        parent.SetWindowStyleFlag(wx.BORDER_NONE)
+        parent.customTitleBar.Show()
+        parent.customTitleBar.Layout()
         parent.nineGridPanel.Show()
         parent.Fit()
         parent.nineGridPanel.Layout()
@@ -115,8 +118,7 @@ class MainPanel(wx.Panel):
     def openPicturePointsSelectFrame(self, event):
         parent = self.GetParent()
         parent.panel.Hide()
-        parent.SetSize(wx.Size(parent.image.Width, parent.image.Height))
-        parent.SetTitle('⚪ ⚪ ⚪ ⚪')
+        #parent.SetSize(wx.Size(parent.image.Width, parent.image.Height))
         parent.SetWindowStyleFlag(wx.BORDER_NONE)
         parent.customTitleBar.Show()
         parent.customTitleBar.Layout()
@@ -222,7 +224,7 @@ class PicturePointsSelectPanel(wx.Panel):
                     self.GetParent().Close()
 
 
-'''
+
 class NineGridFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
@@ -240,7 +242,6 @@ class NineGridFrame(wx.Frame):
         bmp.SetMaskColour(wx.BLACK)
         icon = wx.Icon(bmp)
         self.SetIcon(icon)
-'''
 
 
 class NineGridPanel(wx.Panel):
@@ -317,35 +318,40 @@ class NineGridPanel(wx.Panel):
         self.SetSizer(self.box_sizer_1)
 
         self.grid_sizer_1 = wx.GridBagSizer(0, 0)
-        self.label_1 = wx.StaticText(self, wx.ID_ANY, 'Select the first picture', size=wx.Size(500, 50))
-        self.label_1.SetFont(wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI'))
-        self.grid_sizer_1.Add(self.label_1, (0, 0), (1, 3))
-        self.grid_sizer_1.Add(self.bitmap_button_1, (1, 0), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_2, (1, 1), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_3, (1, 2), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_4, (2, 0), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_5, (2, 1), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_6, (2, 2), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_7, (3, 0), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_8, (3, 1), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_9, (3, 2), (1, 1), 0, 0)
+        self.grid_sizer_1.Add(self.bitmap_button_1, (0, 0), (1, 1), 0, 0)
+        self.grid_sizer_1.Add(self.bitmap_button_2, (0, 1), (1, 1), 0, 0)
+        self.grid_sizer_1.Add(self.bitmap_button_3, (0, 2), (1, 1), 0, 0)
+        self.grid_sizer_1.Add(self.bitmap_button_4, (1, 0), (1, 1), 0, 0)
+        self.grid_sizer_1.Add(self.bitmap_button_5, (1, 1), (1, 1), 0, 0)
+        self.grid_sizer_1.Add(self.bitmap_button_6, (1, 2), (1, 1), 0, 0)
+        self.grid_sizer_1.Add(self.bitmap_button_7, (2, 0), (1, 1), 0, 0)
+        self.grid_sizer_1.Add(self.bitmap_button_8, (2, 1), (1, 1), 0, 0)
+        self.grid_sizer_1.Add(self.bitmap_button_9, (2, 2), (1, 1), 0, 0)
+        self.grid_sizer_1.AddGrowableRow(0)
         self.grid_sizer_1.AddGrowableRow(1)
         self.grid_sizer_1.AddGrowableRow(2)
-        self.grid_sizer_1.AddGrowableRow(3)
         self.grid_sizer_1.AddGrowableCol(0)
         self.grid_sizer_1.AddGrowableCol(1)
         self.grid_sizer_1.AddGrowableCol(2)
-        self.box_sizer_1.Add(self.grid_sizer_1, 0, wx.ALL | wx.EXPAND, 25, 0)
+        self.box_sizer_1.Add(self.grid_sizer_1, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 25, 0)
         self.Layout()
         # end wxGlade
 
     def button_handler(self, event):
         label = event.GetEventObject().GetLabel()
-        lst = ['first', 'second', 'third', 'fourth']
         self.selected_pictures.append(label)
-
+        parentCustomTitleBar = self.GetParent().customTitleBar
+        children = parentCustomTitleBar.sizerTitleBar.GetChildren()
+        dotsWidget = children[1].GetWindow()
+        if (len(self.selected_pictures) == 1):
+            dotsWidget.SetLabel("⚫ ⚪ ⚪ ⚪")
+        if (len(self.selected_pictures) == 2):
+            dotsWidget.SetLabel("⚫ ⚫ ⚪ ⚪")
+        if (len(self.selected_pictures) == 3):
+            dotsWidget.SetLabel("⚫ ⚫ ⚫ ⚪")
         if len(self.selected_pictures) == 4:
-            pswd_file = open("User-Interface/password.txt", "r+")
+            dotsWidget.SetLabel("⚫ ⚫ ⚫ ⚫")
+            pswd_file = open(curdir + "/password.txt", "r+")
             file_pswd = pswd_file.read()
 
             print(self.selected_pictures)
@@ -355,10 +361,8 @@ class NineGridPanel(wx.Panel):
                 sys.exit(0)
             else:
                 self.selected_pictures = []
-                self.label_1.SetLabel('Select the {s} picture'.format(s=lst[len(self.selected_pictures)]))
+                dotsWidget.SetLabel("⚪ ⚪ ⚪ ⚪")
                 wx.MessageBox("Authentication failed", " ", wx.OK | wx.ICON_INFORMATION)
-        else:
-            self.label_1.SetLabel('Select the {s} picture'.format(s=lst[len(self.selected_pictures)]))
 
 
 class CustomTitleBar(wx.Panel):
@@ -390,7 +394,7 @@ class CustomTitleBar(wx.Panel):
         self.sizerTitleBar.Add((50, -1))
         self.sizerTitleBar.Add(self.progressDots, 0, wx.ALIGN_CENTER, 0)
         self.sizerTitleBar.Add(self.btnExit, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, -20)
-        self.sizerTitleBar.AddGrowableRow(0)
+        #self.sizerTitleBar.AddGrowableRow(0)
         self.sizerTitleBar.AddGrowableCol(1)
 
         self.SetSizer(self.sizerTitleBar)
@@ -398,12 +402,6 @@ class CustomTitleBar(wx.Panel):
 
     def OnBtnExitClick(self, event):
         self.GetParent().Close()
-
-    def OnBtnMinimizeClick(self, event):
-        self.GetParent().Iconize(True)
-
-    def OnBtnMaximizeClick(self, event):
-        self.GetParent().Maximize(not self.IsMaximized())
 
 if __name__ == "__main__":
     app = MyApp()

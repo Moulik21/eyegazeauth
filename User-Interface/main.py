@@ -305,9 +305,9 @@ class PicturePointsSelectPanel(wx.Panel):
                 wx.MessageBox("Password has been saved", " ", wx.OK | wx.ICON_INFORMATION)
 
     def calcAndSaveGridOffset(self, selections):
-        pswdFile = open(curdir + "/picturepointspassword.txt", "w")
+        pswdFile = open(curdir + "/picturepointspassword.txt", "w+")
         pswdFile.seek(0)
-        offsetFile = open(curdir + "/picturepointsoffset.txt", "w")
+        offsetFile = open(curdir + "/picturepointsoffset.txt", "w+")
         offsetFile.seek(0)
 
         self.selected_grids = []
@@ -343,6 +343,14 @@ class NineGridFrame(wx.Frame):
 
         self.SetSizer(box_sizer)
         box_sizer.Fit(self)
+
+        self.SetBackgroundColour('white')
+
+        # Blank icon workaround
+        bmp = wx.Bitmap(1, 1)
+        bmp.SetMaskColour(wx.BLACK)
+        icon = wx.Icon(bmp)
+        self.SetIcon(icon)
 
 
 class NineGridPanel(wx.Panel):
@@ -456,7 +464,7 @@ class NineGridPanel(wx.Panel):
             else:
                 pswd_hash = sha512_crypt.hash(''.join(self.selected_pictures))
 
-                pswd_file = open("User-Interface/password.txt", "w")
+                pswd_file = open(curdir + "/password.txt", "w+")
                 pswd_file.seek(0)
                 pswd_file.write(pswd_hash)
                 self.GetParent().Close()

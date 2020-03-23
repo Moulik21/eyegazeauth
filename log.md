@@ -60,3 +60,4 @@ Week ending Friday, February 14, 2020
  Week ending Friday, March 27, 2020
 ---------------------------------------
 - Add login progress dots for 9-grid - Keenan Kua
+- Added forward direction(now all 9 grids are accounted for). Keep track of past frames and only return a result when most frames agree.  Daniel Bishara

@@ -1,9 +1,34 @@
-import numpy as np
-import cv2
 from math import atan2, degrees
+import math
+import cv2
+import numpy as np
 
 FACE_PATH = "haarcascade_frontalface_default.xml"
 EYE_PATH = "haarcascade_eye.xml"
+
+
+class tileTracker:
+    def __init__(self):
+        self.history_size = 10
+        self.minimum_repeats = 6
+
+        self.history = [-1] * self.history_size
+        self.last_location = -1
+
+    def record(self, tile):
+        for x in range(self.history_size - 1):
+            self.history[x] = self.history[x + 1]
+        self.history[self.history_size - 1] = tile
+        self.check_for_change(tile)
+
+    def check_for_change(self,tile):
+        count = 0
+        for x in range(self.history_size):
+            if self.history[x] == tile:
+                count += 1
+        if(count >= self.minimum_repeats and tile != self.last_location):
+            self.last_location = tile
+            print(tile)
 
 def InitHaarCascade():
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
@@ -76,10 +101,13 @@ def main():
     cap = cv2.VideoCapture(0)
     cv2.namedWindow('image')
     cv2.createTrackbar('threshold', 'image', 0, 255, nothing)
+
+    tile_tracker = tileTracker()
     while True:
         _, frame = cap.read()
         face_frame = detect_faces(frame, face_cascade)
         if face_frame is not None:
+
             eyes = detect_eyes(face_frame, eye_cascade)
             for eye in eyes:
                 if eye is not None:
@@ -95,27 +123,45 @@ def main():
                         height, width = eye.shape[:2]
                         eye_box_center = [width/2, height/2]
                         pupil_point = keypoints[0].pt
+
                         xDiff = pupil_point[0] - eye_box_center[0]
-                        yDiff = eye_box_center[1] - pupil_point[1]
+                        yDiff = pupil_point[1] - eye_box_center[1]
+                        distance = math.sqrt(xDiff * xDiff + yDiff * yDiff)
+
+                        yDiff = -yDiff #account for the fact that the y axis moves downwards
                         angle = degrees(atan2(yDiff, xDiff))
-                        if angle > 0 and angle < 25:
-                            print("right")
+                        result = -1
+                        if distance < 6:
+                            #forward
+                            result = 5
+                        elif angle > 0 and angle < 25:
+                            #left
+                            result = 4
                         elif angle >= 25 and angle <65:
-                            print("top right")
+                            #top left
+                            result = 1
                         elif angle >= 65 and angle <110:
-                            print("up")
+                            #up
+                            result = 2
                         elif angle >= 110 and angle <120:
-                            print("top left")
+                            #top right
+                            result = 3
                         elif angle >= 120 and angle <200:
-                            print("left")
+                            #right
+                            result = 6
                         elif angle >= 200 and angle <245:
-                            print("bottom left")
+                            #bottom right
+                            result = 9
                         elif angle >= 245 and angle <290:
-                            print("down")
+                            #down
+                            result = 8
                         elif angle >= 290 and angle <335:
-                            print("bottom right")
+                            #bottom left
+                            result = 7
                         elif angle >=335:
-                            print("right")
+                            #left
+                            result = 4
+                        tile_tracker.record(result)
         cv2.imshow('image', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break

@@ -56,3 +56,7 @@ Week ending Friday, February 14, 2020
 - Worked on improving accuracy of eye tracking, and also worked on gaze direction - Daniel and Paul
 - Add progress dots feedback to picture points select login screen via custom title bar - Keenan Kua
 - Pupil detection more consistent using old keypoints and old area of the pupil detected in the last frame. Only works for 1 of the eyes, need to differeniate different eyes and make pupil consistent for both eyes - Moulik Gaglani
+
+ Week ending Friday, March 27, 2020
+---------------------------------------
+- Add login progress dots for 9-grid - Keenan Kua

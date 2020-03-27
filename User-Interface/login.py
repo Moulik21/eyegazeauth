@@ -389,9 +389,9 @@ class CustomTitleBar(wx.Panel):
         self.sizerTitleBar = wx.FlexGridSizer(1, 3, 0, 0)
 
         # Titlebar:
-        self.progressDots = wx.StaticText(self, wx.ID_ANY, "⚪ ⚪ ⚪ ⚪")
+        self.progressDots = wx.StaticText(self, wx.ID_ANY, "⚪ ⚪ ⚪ ⚪", size=wx.Size(100, -1))
         self.progressDots.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, 0, ""))
-        self.sizerTitleBar.Add((50, -1))
+        self.sizerTitleBar.Add(50, -1)
         self.sizerTitleBar.Add(self.progressDots, 0, wx.ALIGN_CENTER, 0)
         self.sizerTitleBar.Add(self.btnExit, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, -20)
         #self.sizerTitleBar.AddGrowableRow(0)

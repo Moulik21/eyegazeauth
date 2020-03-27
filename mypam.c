@@ -25,7 +25,8 @@ PAM_EXTERN int pam_sm_authenticate( pam_handle_t *pamh, int flags,int argc, cons
 	int ret = 1;
 	
 	pid = fork();
-	char *parms[] = {"python", "/lib/security/button3.py", NULL};   
+	// Path may need to be changed depending on who is using it
+	char *parms[] = {"/usr/bin/python3", "/lib/security/src/eyegazeauth/User-Interface/login.py", NULL};  
 	
 	if(pid < 0) {
         	fprintf(stderr, "Fork failed");
@@ -50,7 +51,7 @@ PAM_EXTERN int pam_sm_authenticate( pam_handle_t *pamh, int flags,int argc, cons
  	setuid(atoi(uid));
   	setgid(atoi(gid));
   
-      	ret = execvp(parms[0], parms);
+      	ret = execv(parms[0], parms);
 	//We should never get here!
 	exit(1);
 	}
@@ -59,9 +60,11 @@ PAM_EXTERN int pam_sm_authenticate( pam_handle_t *pamh, int flags,int argc, cons
 		ret = WEXITSTATUS(waitstatus);
 	}
 
-	if (ret != 0){
-		return PAM_ABORT;
-	}
+	if (ret != 1){
+                return PAM_ABORT;
+        } else{
+                return PAM_SUCCESS;
+        }
 
 	return PAM_SUCCESS;
 }

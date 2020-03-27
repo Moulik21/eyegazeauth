@@ -61,3 +61,4 @@ Week ending Friday, February 14, 2020
 ---------------------------------------
 - Add login progress dots for 9-grid - Keenan Kua
 - Eye tracking stuff: Added forward direction(now all 9 grids are accounted for). Keep track of past frames and only return a result when most frames agree.  Daniel Bishara
+- Added random pictures for 9-grid password selection and corresponding pictures for login, fixed small visual error with login progress dots - Jiyu Liu

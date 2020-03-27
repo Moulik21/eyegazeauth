@@ -4,6 +4,7 @@ import wx
 import webbrowser
 import wx.lib.buttons as buts
 import sys
+import random as r
 from passlib.hash import sha512_crypt
 
 # get current file directory
@@ -359,69 +360,29 @@ class NineGridPanel(wx.Panel):
 
         self.curdir = os.path.dirname(os.path.realpath(__file__))
         self.selected_pictures = []
-        self.bitmap_button_1 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir + "/images/bicycle/bicycle1.jpg",
-                                                                          wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_2 = wx.BitmapButton(self, wx.ID_ANY,
-                                               wx.Bitmap(self.curdir + "/images/car/car1.jpg", wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_3 = wx.BitmapButton(self, wx.ID_ANY,
-                                               wx.Bitmap(self.curdir + "/images/cat/cat1.jpg", wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_4 = wx.BitmapButton(self, wx.ID_ANY,
-                                               wx.Bitmap(self.curdir + "/images/door/door1.jpg", wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_5 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir + "/images/flower/flower1.jpg",
-                                                                          wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_6 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir + "/images/guitar/guitar1.jpg",
-                                                                          wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_7 = wx.BitmapButton(self, wx.ID_ANY,
-                                               wx.Bitmap(self.curdir + "/images/lamp/lamp1.jpg", wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_8 = wx.BitmapButton(self, wx.ID_ANY,
-                                               wx.Bitmap(self.curdir + "/images/moon/moon1.jpg", wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_9 = wx.BitmapButton(self, wx.ID_ANY,
-                                               wx.Bitmap(self.curdir + "/images/tree/tree1.jpg", wx.BITMAP_TYPE_ANY))
 
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
+        image_labels = os.listdir(self.curdir + '/images/9_grid')
 
-    def __set_properties(self):
-        # begin wxGlade: MyFrame.__set_properties
-        self.bitmap_button_1.SetSize(self.bitmap_button_1.GetBestSize())
-        self.bitmap_button_1.Bind(wx.EVT_BUTTON, self.button_handler)
-        self.bitmap_button_1.SetLabel('bicycle')
+        self.buttons = []
+        self.labels = []
+        for i in range(9):
+            picture_label = image_labels.pop(r.randint(0, len(image_labels) - 1))
+            self.labels.append(picture_label)
+            pictures = os.listdir(self.curdir + '/images/9_grid/' + picture_label)
+            picture_number = pictures.pop(r.randint(0, len(pictures) - 1))
 
-        self.bitmap_button_2.SetSize(self.bitmap_button_2.GetBestSize())
-        self.bitmap_button_2.Bind(wx.EVT_BUTTON, self.button_handler)
-        self.bitmap_button_2.SetLabel('car')
+            self.buttons.append(wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir + "/images/9_grid/{0}/{1}".format(picture_label, picture_number))))
 
-        self.bitmap_button_3.SetSize(self.bitmap_button_3.GetBestSize())
-        self.bitmap_button_3.Bind(wx.EVT_BUTTON, self.button_handler)
-        self.bitmap_button_3.SetLabel('cat')
+        # save labels
+        with open(curdir + '/9gridlabels.txt', 'w') as f:
+            f.write(' '.join(self.labels) + '\n')
 
-        self.bitmap_button_4.SetSize(self.bitmap_button_4.GetBestSize())
-        self.bitmap_button_4.Bind(wx.EVT_BUTTON, self.button_handler)
-        self.bitmap_button_4.SetLabel('door')
+        for i in range(9):
+            self.buttons[i].SetSize(self.buttons[i].GetBestSize())
+            self.buttons[i].Bind(wx.EVT_BUTTON, self.button_handler)
+            self.buttons[i].SetLabel(self.labels[i])
 
-        self.bitmap_button_5.SetSize(self.bitmap_button_5.GetBestSize())
-        self.bitmap_button_5.Bind(wx.EVT_BUTTON, self.button_handler)
-        self.bitmap_button_5.SetLabel('flower')
 
-        self.bitmap_button_6.SetSize(self.bitmap_button_6.GetBestSize())
-        self.bitmap_button_6.Bind(wx.EVT_BUTTON, self.button_handler)
-        self.bitmap_button_6.SetLabel('guitar')
-
-        self.bitmap_button_7.SetSize(self.bitmap_button_7.GetBestSize())
-        self.bitmap_button_7.Bind(wx.EVT_BUTTON, self.button_handler)
-        self.bitmap_button_7.SetLabel('lamp')
-
-        self.bitmap_button_8.SetSize(self.bitmap_button_8.GetBestSize())
-        self.bitmap_button_8.Bind(wx.EVT_BUTTON, self.button_handler)
-        self.bitmap_button_8.SetLabel('moon')
-
-        self.bitmap_button_9.SetSize(self.bitmap_button_9.GetBestSize())
-        self.bitmap_button_9.Bind(wx.EVT_BUTTON, self.button_handler)
-        self.bitmap_button_9.SetLabel('tree')
-        # end wxGlade
-
-    def __do_layout(self):
         # begin wxGlade: MyFrame.__do_layout
         self.box_sizer_1 = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.box_sizer_1)
@@ -430,15 +391,11 @@ class NineGridPanel(wx.Panel):
         self.label_1 = wx.StaticText(self, wx.ID_ANY, 'Select the first picture')
         self.label_1.SetFont(wx.Font(18, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Segoe UI'))
         self.grid_sizer_1.Add(self.label_1, (0, 0), (1, 3))
-        self.grid_sizer_1.Add(self.bitmap_button_1, (1, 0), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_2, (1, 1), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_3, (1, 2), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_4, (2, 0), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_5, (2, 1), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_6, (2, 2), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_7, (3, 0), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_8, (3, 1), (1, 1), 0, 0)
-        self.grid_sizer_1.Add(self.bitmap_button_9, (3, 2), (1, 1), 0, 0)
+
+        for i in range(3):
+            for j in range(3):
+                self.grid_sizer_1.Add(self.buttons[(i * 3) + j], (i + 1, j), (1, 1), 0, 0)
+
         self.grid_sizer_1.AddGrowableRow(1)
         self.grid_sizer_1.AddGrowableRow(2)
         self.grid_sizer_1.AddGrowableRow(3)
@@ -461,10 +418,16 @@ class NineGridPanel(wx.Panel):
             if happySelection.ShowModal() == wx.ID_NO:
                 self.selected_pictures = []
                 self.label_1.SetLabel('Select the {s} picture'.format(s=lst[len(self.selected_pictures)]))
+
+                # new random buttons and reset 9gridlabels file
+                labels = self.random_buttons()
+                with open(curdir + '/9gridlabels.txt', 'w') as f:
+                    f.write(' '.join(labels) + '\n')
+
             else:
                 pswd_hash = sha512_crypt.hash(''.join(self.selected_pictures))
 
-                pswd_file = open(curdir + "/password.txt", "w+")
+                pswd_file = open(curdir + "/9gridpassword.txt", "w+")
                 pswd_file.seek(0)
                 pswd_file.write(pswd_hash)
                 self.GetParent().Close()
@@ -472,6 +435,29 @@ class NineGridPanel(wx.Panel):
                 sys.exit(0)
         else:
             self.label_1.SetLabel('Select the {s} picture'.format(s=lst[len(self.selected_pictures)]))
+            
+            labels = self.random_buttons()
+            
+            with open(curdir + '/9gridlabels.txt', 'a') as f:
+                f.write(' '.join(labels) + '\n')
+
+    def random_buttons(self):
+        image_labels = os.listdir(self.curdir + '/images/9_grid')
+        labels = []
+        for button in self.buttons:
+            picture_label = image_labels.pop(r.randint(0, len(image_labels) - 1))
+            labels.append(picture_label)
+            pictures = os.listdir(self.curdir + '/images/9_grid/' + picture_label)
+            picture_number = pictures.pop(r.randint(0, len(pictures) - 1))
+
+            button.SetBitmapLabel(wx.Bitmap(self.curdir + "/images/9_grid/{0}/{1}".format(picture_label, picture_number)))
+            button.SetLabel(picture_label)
+        
+        return labels
+                
+
+
+
 
 
 if __name__ == "__main__":

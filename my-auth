@@ -1,3 +1,8 @@
-auth sufficient mypam.so
-account sufficient mypam.so
+# Our custom PAM
+auth [success=1 default=ignore] mypam.so
 
+# Handles incorrect passwords
+auth requisite pam_deny.so
+
+auth    required                        pam_permit.so
+auth    optional                        pam_cap.so

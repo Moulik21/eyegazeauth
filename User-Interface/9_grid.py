@@ -32,15 +32,15 @@ class NineGridPanel(wx.Panel):
 
         self.curdir = os.path.dirname(os.path.realpath(__file__))
         self.selected_pictures = []
-        self.bitmap_button_1 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/bicycle/bicycle1.jpg", wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_2 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/car/car1.jpg", wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_3 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/cat/cat1.jpg", wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_4 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/door/door1.jpg", wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_5 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/flower/flower1.jpg", wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_6 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/guitar/guitar1.jpg", wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_7 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/lamp/lamp1.jpg", wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_8 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/moon/moon1.jpg", wx.BITMAP_TYPE_ANY))
-        self.bitmap_button_9 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/tree/tree1.jpg", wx.BITMAP_TYPE_ANY))
+        self.bitmap_button_1 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/9_grid/bicycle/bicycle1.jpg", wx.BITMAP_TYPE_ANY))
+        self.bitmap_button_2 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/9_grid/car/car1.jpg", wx.BITMAP_TYPE_ANY))
+        self.bitmap_button_3 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/9_grid/cat/cat1.jpg", wx.BITMAP_TYPE_ANY))
+        self.bitmap_button_4 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/9_grid/door/door1.jpg", wx.BITMAP_TYPE_ANY))
+        self.bitmap_button_5 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/9_grid/flower/flower1.jpg", wx.BITMAP_TYPE_ANY))
+        self.bitmap_button_6 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/9_grid/guitar/guitar1.jpg", wx.BITMAP_TYPE_ANY))
+        self.bitmap_button_7 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/9_grid/lamp/lamp1.jpg", wx.BITMAP_TYPE_ANY))
+        self.bitmap_button_8 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/9_grid/moon/moon1.jpg", wx.BITMAP_TYPE_ANY))
+        self.bitmap_button_9 = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(self.curdir+ "/images/9_grid/tree/tree1.jpg", wx.BITMAP_TYPE_ANY))
 
         self.__set_properties()
         self.__do_layout()
@@ -117,7 +117,7 @@ class NineGridPanel(wx.Panel):
         self.selected_pictures.append(label)\
 
         if len(self.selected_pictures) == 4:
-            self.label_1.SetLabel('Passwowrd set')
+            self.label_1.SetLabel('Password set')
             pswd_hash = sha512_crypt.hash(''.join(self.selected_pictures))
             print("Hash: " + str(pswd_hash))
         else:

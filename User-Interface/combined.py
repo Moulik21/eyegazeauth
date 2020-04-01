@@ -8,6 +8,7 @@ import random as r
 import math
 import cv2
 import numpy as np
+import threading
 from passlib.hash import sha512_crypt
 from math import atan2, degrees
 
@@ -51,12 +52,14 @@ class MainFrame(wx.Frame):
         self.boxSizer.Add(self.panel, 1, wx.EXPAND)
         self.panel.Show()
 
+        '''
         picturePathFile = open(curdir + "/picturepointsname.txt", "r")
         picturePath = picturePathFile.readline()
         self.image = wx.Image(picturePath, wx.BITMAP_TYPE_ANY)
         self.picturePointsSelectPanel = PicturePointsSelectPanel(parent=self, img=self.image)
         self.boxSizer.Add(self.picturePointsSelectPanel, 1, wx.EXPAND)
         self.picturePointsSelectPanel.Hide()
+        '''
 
         self.nineGridPanel = NineGridPanel(self)
         self.boxSizer.Add(self.nineGridPanel, 1, wx.EXPAND)
@@ -103,12 +106,14 @@ class MainPanel(wx.Panel):
         boxSizer.Add(pinButton, 0, wx.LEFT, 30)
 
         boxSizer.Add((-1, 15))
-
+        
+        '''
         bmp = wx.Image(curdir + "/images/PictureButton.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
         picButton = wx.BitmapButton(self, -1, bmp, style=wx.BORDER_NONE)
         picButton.SetBackgroundColour(wx.WHITE)
         picButton.Bind(wx.EVT_BUTTON, lambda event: self.openPicturePointsSelectFrame(event))
         boxSizer.Add(picButton, 0, wx.LEFT, 30)
+        '''
 
         self.SetSizer(boxSizer)
         boxSizer.Layout()
@@ -122,8 +127,16 @@ class MainPanel(wx.Panel):
         parent.nineGridPanel.Show()
         parent.Fit()
         parent.nineGridPanel.Layout()
-        self.eyeTracker.getTiles()
 
+        x = threading.Thread(target=self.eyeTrackThread, args=(parent.nineGridPanel.on_button_press,))
+        x.start()
+
+        #wx.FutureCall(1000, self.eyeTracker.getTiles())
+
+    def eyeTrackThread(self, func):
+        self.eyeTracker.getTiles(func)
+
+    '''
     def openPicturePointsSelectFrame(self, event):
         parent = self.GetParent()
         parent.panel.Hide()
@@ -135,8 +148,9 @@ class MainPanel(wx.Panel):
         parent.Fit()
         parent.picturePointsSelectPanel.Layout()
         parent.Maximize(True)
+    '''
 
-
+'''
 class PicturePointsSelectPanel(wx.Panel):
     selection = []
 
@@ -202,8 +216,8 @@ class PicturePointsSelectPanel(wx.Panel):
                     dotsWidget.SetLabel("⚪ ⚪ ⚪ ⚪")
                 else:
                     self.GetParent().Close()
-
-
+'''
+'''
 class NineGridFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
@@ -221,7 +235,7 @@ class NineGridFrame(wx.Frame):
         bmp.SetMaskColour(wx.BLACK)
         icon = wx.Icon(bmp)
         self.SetIcon(icon)
-
+'''
 
 class NineGridPanel(wx.Panel):
     def __init__(self, *args, **kwds):
@@ -269,6 +283,56 @@ class NineGridPanel(wx.Panel):
         self.box_sizer_1.Add(self.grid_sizer_1, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 25, 0)
         self.Layout()
         # end wxGlade
+
+    def on_button_press(self, tile):
+        label = self.labels[len(self.selected_pictures)-1][tile]
+        self.selected_pictures.append(label)
+        parentCustomTitleBar = self.GetParent().customTitleBar
+        children = parentCustomTitleBar.sizerTitleBar.GetChildren()
+        dotsWidget = children[1].GetWindow()
+
+        if len(self.selected_pictures) == 4:
+            dotsWidget.SetLabel("⚫ ⚫ ⚫ ⚫")
+            pswd_file = open(curdir + "/9gridpassword.txt", "r+")
+            file_pswd = pswd_file.read()
+
+            print(self.selected_pictures)
+
+            if (sha512_crypt.verify(''.join(self.selected_pictures), file_pswd)):
+                print('Authentication successful')
+                sys.exit(0)
+            else:
+                self.selected_pictures = []
+                dotsWidget.SetLabel("⚪ ⚪ ⚪ ⚪")
+                wx.MessageBox("Authentication failed", " ", wx.OK | wx.ICON_INFORMATION)
+
+                # go back to first set of pictures
+                for i in range(9):
+                    picture_label = self.labels[len(self.selected_pictures)][i]
+                    pictures = os.listdir(self.curdir + '/images/9_grid/' + picture_label)
+                    picture_number = pictures.pop(r.randint(0, len(pictures) - 1))
+
+                    self.buttons[i].SetBitmapLabel(
+                        wx.Bitmap(self.curdir + "/images/9_grid/{0}/{1}".format(picture_label, picture_number)))
+                    self.buttons[i].SetLabel(picture_label)
+
+        else:
+            if (len(self.selected_pictures) == 1):
+                dotsWidget.SetLabel("⚫ ⚪ ⚪ ⚪")
+            if (len(self.selected_pictures) == 2):
+                dotsWidget.SetLabel("⚫ ⚫ ⚪ ⚪")
+            if (len(self.selected_pictures) == 3):
+                dotsWidget.SetLabel("⚫ ⚫ ⚫ ⚪")
+
+            # set next set of buttons
+            for i in range(9):
+                picture_label = self.labels[len(self.selected_pictures)][i]
+                pictures = os.listdir(self.curdir + '/images/9_grid/' + picture_label)
+                picture_number = pictures.pop(r.randint(0, len(pictures) - 1))
+
+                self.buttons[i].SetBitmapLabel(
+                    wx.Bitmap(self.curdir + "/images/9_grid/{0}/{1}".format(picture_label, picture_number)))
+                self.buttons[i].SetLabel(picture_label)
 
     def button_handler(self, event):
         label = event.GetEventObject().GetLabel()
@@ -361,9 +425,10 @@ class CustomTitleBar(wx.Panel):
 
 
 class TileTracker:
-    def __init__(self):
+    def __init__(self, func):
         self.history_size = 10
         self.minimum_repeats = 6
+        self.func = func
 
         self.history = [-1] * self.history_size
         self.last_location = -1
@@ -382,6 +447,7 @@ class TileTracker:
         if(count >= self.minimum_repeats and tile != self.last_location):
             self.last_location = tile
             print(tile)
+            wx.CallAfter(self.func, tile)
 
 
 class EyeTracker():
@@ -453,12 +519,12 @@ class EyeTracker():
     def nothing(self, x):
         pass
 
-    def getTiles(self):
+    def getTiles(self, func):
         cap = cv2.VideoCapture(0)
         #cv2.namedWindow('image')
         #cv2.createTrackbar('threshold', 'image', 0, 255, nothing)
 
-        tile_tracker = TileTracker()
+        tile_tracker = TileTracker(func)
         while True:
             _, frame = cap.read()
             face_frame = self.detect_faces(frame, self.face_cascade)
@@ -467,10 +533,10 @@ class EyeTracker():
                 eyes = self.detect_eyes(face_frame, self.eye_cascade)
                 for eye in eyes:
                     if eye is not None:
-                        threshold = cv2.getTrackbarPos('threshold', 'image')
-                        eye = self.cut_eyebrows(eye)
-                        keypoints = self.blob_process(eye, threshold, self.detector)
                         thresh = 0
+                        #threshold = cv2.getTrackbarPos('threshold', 'image')
+                        eye = self.cut_eyebrows(eye)
+                        keypoints = self.blob_process(eye, thresh, self.detector)
                         while(not keypoints and thresh < 100):
                             keypoints = self.blob_process(eye, thresh, self.detector)
                             thresh += 5

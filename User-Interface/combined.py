@@ -235,10 +235,13 @@ class NineGridPanel(wx.Panel):
         # get labels
         self.labels = []
 
-        if os.path.exists(curdir + "/9gridlabels.txt"):
-            with open(self.curdir + '/9gridlabels.txt', 'r') as f:
-                for line in f:
-                    self.labels.append(line.split())
+        if not os.path.exists(curdir + "/9gridlabels.txt"):
+            return
+        
+        with open(self.curdir + '/9gridlabels.txt', 'r') as f:
+            for line in f:
+                self.labels.append(line.split())
+        
 
         self.buttons = []
 

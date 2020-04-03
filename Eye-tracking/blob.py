@@ -131,7 +131,8 @@ def main():
                         yDiff = -yDiff #account for the fact that the y axis moves downwards
                         angle = degrees(atan2(yDiff, xDiff))
                         result = -1
-                        if distance < 6:
+                        if (angle < 0): angle += 360;
+                        if distance < 5:
                             #forward
                             result = 5
                         elif angle > 0 and angle < 25:
@@ -158,9 +159,10 @@ def main():
                         elif angle >= 290 and angle <335:
                             #bottom left
                             result = 7
-                        elif angle >=335:
+                        elif angle >=335 and angle < 360:
                             #left
                             result = 4
+                        print(angle)
                         tile_tracker.record(result)
         cv2.imshow('image', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):

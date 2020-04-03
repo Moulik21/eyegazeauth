@@ -53,12 +53,12 @@ class MainFrame(wx.Frame):
         self.panel.Show()
 
 
-        picturePathFile = open(curdir + "/picturepointsname.txt", "r")
-        picturePath = picturePathFile.readline()
-        self.image = wx.Image(picturePath, wx.BITMAP_TYPE_ANY)
-        self.picturePointsSelectPanel = PicturePointsSelectPanel(parent=self, img=self.image)
-        self.boxSizer.Add(self.picturePointsSelectPanel, 1, wx.EXPAND)
-        self.picturePointsSelectPanel.Hide()
+        # picturePathFile = open(curdir + "/picturepointsname.txt", "r")
+        # picturePath = picturePathFile.readline()
+        # self.image = wx.Image(picturePath, wx.BITMAP_TYPE_ANY)
+        # self.picturePointsSelectPanel = PicturePointsSelectPanel(parent=self, img=self.image)
+        # self.boxSizer.Add(self.picturePointsSelectPanel, 1, wx.EXPAND)
+        # self.picturePointsSelectPanel.Hide()
 
 
         self.nineGridPanel = NineGridPanel(self)
@@ -556,6 +556,7 @@ class EyeTracker():
                             yDiff = -yDiff #account for the fact that the y axis moves downwards
                             angle = degrees(atan2(yDiff, xDiff))
                             result = -1
+                            if (angle < 0): angle += 360;
                             if distance < 6:
                                 #forward
                                 result = 5
@@ -583,7 +584,7 @@ class EyeTracker():
                             elif angle >= 290 and angle <335:
                                 #bottom left
                                 result = 7
-                            elif angle >=335:
+                            elif angle >=335 and angle < 360:
                                 #left
                                 result = 4
                             tile_tracker.record(result)

@@ -52,13 +52,13 @@ class MainFrame(wx.Frame):
         self.boxSizer.Add(self.panel, 1, wx.EXPAND)
         self.panel.Show()
 
-
-        # picturePathFile = open(curdir + "/picturepointsname.txt", "r")
-        # picturePath = picturePathFile.readline()
-        # self.image = wx.Image(picturePath, wx.BITMAP_TYPE_ANY)
-        # self.picturePointsSelectPanel = PicturePointsSelectPanel(parent=self, img=self.image)
-        # self.boxSizer.Add(self.picturePointsSelectPanel, 1, wx.EXPAND)
-        # self.picturePointsSelectPanel.Hide()
+        if os.path.exists(curdir + "/picturepointsname.txt"):
+            picturePathFile = open(curdir + "/picturepointsname.txt", "r")
+            picturePath = picturePathFile.readline()
+            self.image = wx.Image(picturePath, wx.BITMAP_TYPE_ANY)
+            self.picturePointsSelectPanel = PicturePointsSelectPanel(parent=self, img=self.image)
+            self.boxSizer.Add(self.picturePointsSelectPanel, 1, wx.EXPAND)
+            self.picturePointsSelectPanel.Hide()
 
 
         self.nineGridPanel = NineGridPanel(self)
@@ -119,36 +119,42 @@ class MainPanel(wx.Panel):
         boxSizer.Layout()
 
     def openNineGridFrame(self, event):
-        parent = self.GetParent()
-        parent.panel.Hide()
-        parent.SetWindowStyleFlag(wx.BORDER_NONE)
-        parent.customTitleBar.Show()
-        parent.customTitleBar.Layout()
-        parent.nineGridPanel.Show()
-        parent.Fit()
-        parent.nineGridPanel.Layout()
-        parent.ShowFullScreen(True)
 
-        parent.eye_track_thread = threading.Thread(target=self.startEyeTrack, args=(parent.nineGridPanel.on_button_press,))
-        parent.eye_track_thread.start()
+        if not os.path.exists(curdir + "/9gridlabels.txt"):
+            wx.MessageBox("9 grid login has not been set up", " ", wx.OK | wx.ICON_INFORMATION)
+        else:
+            parent = self.GetParent()
+            parent.panel.Hide()
+            parent.SetWindowStyleFlag(wx.BORDER_NONE)
+            parent.customTitleBar.Show()
+            parent.customTitleBar.Layout()
+            parent.nineGridPanel.Show()
+            parent.Fit()
+            parent.nineGridPanel.Layout()
+            parent.ShowFullScreen(True)
 
-        #wx.FutureCall(1000, self.eyeTracker.getTiles())
+            parent.eye_track_thread = threading.Thread(target=self.startEyeTrack, args=(parent.nineGridPanel.on_button_press,))
+            parent.eye_track_thread.start()
 
     def startEyeTrack(self, func):
         self.eyeTracker.getTiles(func)
 
 
     def openPicturePointsSelectFrame(self, event):
-        parent = self.GetParent()
-        parent.panel.Hide()
-        # parent.SetSize(wx.Size(parent.image.Width, parent.image.Height))
-        parent.SetWindowStyleFlag(wx.BORDER_NONE)
-        parent.customTitleBar.Show()
-        parent.customTitleBar.Layout()
-        parent.picturePointsSelectPanel.Show()
-        parent.Fit()
-        parent.picturePointsSelectPanel.Layout()
-        parent.Maximize(True)
+
+        if not os.path.exists(curdir + "/picturepointsname.txt"):
+            wx.MessageBox("Picture points has not been set up", " ", wx.OK | wx.ICON_INFORMATION)
+        else:
+            parent = self.GetParent()
+            parent.panel.Hide()
+            # parent.SetSize(wx.Size(parent.image.Width, parent.image.Height))
+            parent.SetWindowStyleFlag(wx.BORDER_NONE)
+            parent.customTitleBar.Show()
+            parent.customTitleBar.Layout()
+            parent.picturePointsSelectPanel.Show()
+            parent.Fit()
+            parent.picturePointsSelectPanel.Layout()
+            parent.Maximize(True)
 
 
 
@@ -219,26 +225,6 @@ class PicturePointsSelectPanel(wx.Panel):
                     self.GetParent().eye_track_thread.join()
                     self.GetParent().Close()
 
-'''
-class NineGridFrame(wx.Frame):
-    def __init__(self, *args, **kwds):
-        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
-        wx.Frame.__init__(self, *args, **kwds)
-
-        box_sizer = wx.BoxSizer(wx.VERTICAL)
-        panel = NineGridPanel(self)
-        box_sizer.Add(panel, 1, wx.EXPAND)
-
-        self.SetSizer(box_sizer)
-        box_sizer.Fit(self)
-
-        # Blank icon workaround
-        bmp = wx.Bitmap(1, 1)
-        bmp.SetMaskColour(wx.BLACK)
-        icon = wx.Icon(bmp)
-        self.SetIcon(icon)
-'''
-
 class NineGridPanel(wx.Panel):
     def __init__(self, *args, **kwds):
         wx.Panel.__init__(self, *args, **kwds)
@@ -248,9 +234,14 @@ class NineGridPanel(wx.Panel):
 
         # get labels
         self.labels = []
+
+        if not os.path.exists(curdir + "/9gridlabels.txt"):
+            return
+        
         with open(self.curdir + '/9gridlabels.txt', 'r') as f:
             for line in f:
                 self.labels.append(line.split())
+        
 
         self.buttons = []
 

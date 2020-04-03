@@ -127,13 +127,14 @@ class MainPanel(wx.Panel):
         parent.nineGridPanel.Show()
         parent.Fit()
         parent.nineGridPanel.Layout()
+        parent.ShowFullScreen(True)
 
-        x = threading.Thread(target=self.eyeTrackThread, args=(parent.nineGridPanel.on_button_press,))
-        x.start()
+        parent.eye_track_thread = threading.Thread(target=self.startEyeTrack, args=(parent.nineGridPanel.on_button_press,))
+        parent.eye_track_thread.start()
 
         #wx.FutureCall(1000, self.eyeTracker.getTiles())
 
-    def eyeTrackThread(self, func):
+    def startEyeTrack(self, func):
         self.eyeTracker.getTiles(func)
 
 
@@ -215,6 +216,7 @@ class PicturePointsSelectPanel(wx.Panel):
                     self.sbmpImg.SetBitmap(self.bmpImg)
                     dotsWidget.SetLabel("⚪ ⚪ ⚪ ⚪")
                 else:
+                    self.GetParent().eye_track_thread.join()
                     self.GetParent().Close()
 
 '''
@@ -268,11 +270,11 @@ class NineGridPanel(wx.Panel):
         self.box_sizer_1 = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.box_sizer_1)
 
-        self.grid_sizer_1 = wx.GridBagSizer(0, 0)
+        self.grid_sizer_1 = wx.GridBagSizer(100, 0)
 
         for i in range(3):
             for j in range(3):
-                self.grid_sizer_1.Add(self.buttons[(i * 3) + j], (i + 1, j), (1, 1), 0, 0)
+                self.grid_sizer_1.Add(self.buttons[(i * 3) + j], (i + 1, j), (1, 1), flag=wx.ALIGN_CENTER)
 
         self.grid_sizer_1.AddGrowableRow(0)
         self.grid_sizer_1.AddGrowableRow(1)
@@ -285,7 +287,7 @@ class NineGridPanel(wx.Panel):
         # end wxGlade
 
     def on_button_press(self, tile):
-        label = self.labels[len(self.selected_pictures)-1][tile]
+        label = self.labels[len(self.selected_pictures)-1][tile-1]
         self.selected_pictures.append(label)
         parentCustomTitleBar = self.GetParent().customTitleBar
         children = parentCustomTitleBar.sizerTitleBar.GetChildren()
@@ -300,6 +302,7 @@ class NineGridPanel(wx.Panel):
 
             if (sha512_crypt.verify(''.join(self.selected_pictures), file_pswd)):
                 print('Authentication successful')
+                self.GetParent().eye_track_thread.join()
                 sys.exit(0)
             else:
                 self.selected_pictures = []
@@ -314,9 +317,6 @@ class NineGridPanel(wx.Panel):
                     self.buttons[i].SetBitmapLabel(
                         wx.Bitmap(self.curdir + "/images/9_grid/{0}/{1}".format(picture_label, picture_number)))
                     self.buttons[i].SetLabel(picture_label)
-
-                x = threading.Thread(target=self.GetParent().panel.eyeTrackThread, args=(self.on_button_press,))
-                x.start()
 
         else:
             if (len(self.selected_pictures) == 1):
@@ -352,6 +352,7 @@ class NineGridPanel(wx.Panel):
 
             if (sha512_crypt.verify(''.join(self.selected_pictures), file_pswd)):
                 print('Authentication successful')
+                self.GetParent().eye_track_thread.join()
                 sys.exit(0)
             else:
                 self.selected_pictures = []
@@ -522,7 +523,7 @@ class EyeTracker():
         pass
 
     def getTiles(self, func):
-        cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        cap = cv2.VideoCapture(0)
         #cv2.namedWindow('image')
         #cv2.createTrackbar('threshold', 'image', 0, 255, nothing)
 
